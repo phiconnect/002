@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Quiz</title>
+  <!-- MathJax for LaTeX rendering -->
+  <script>
+    window.MathJax = {
+      tex: { inlineMath: [['$','$'], ['\\(','\\)']], displayMath: [['$$','$$'], ['\\[','\\]']] },
+      options: { skipHtmlTags: ['script','noscript','style','textarea','pre'] }
+    };
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" id="MathJax-script" async></script>
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, sans-serif;
+      background: #0f1117;
+      color: #e2e8f0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+    header {
+      width: 100%;
+      max-width: 700px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.5rem;
+    }
+    header h1 { font-size: 1.3rem; color: #a78bfa; font-weight: 700; }
+    .reset-link {
+      font-size: .85rem;
+      color: #64748b;
+      text-decoration: none;
+      transition: color .2s;
+    }
+    .reset-link:hover { color: #94a3b8; }
+
+    /* Progress */
+    .progress-bar-wrap {
+      width: 100%;
+      max-width: 700px;
+      background: #1e2130;
+      border-radius: 99px;
+      height: 6px;
+      margin-bottom: 1.5rem;
+      overflow: hidden;
+    }
+    .progress-bar { height: 100%; background: #7c3aed; border-radius: 99px; transition: width .3s; }
+
+    /* Card */
+    .card {
+      background: #1e2130;
+      border: 1px solid #2d3148;
+      border-radius: 16px;
+      padding: 2rem;
+      max-width: 700px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,.4);
+    }
+    .q-meta { font-size: .82rem; color: #64748b; margin-bottom: 1rem; }
+    .q-text { font-size: 1.1rem; line-height: 1.7; color: #e2e8f0; margin-bottom: 1.5rem; }
+
+    /* Multiple-choice */
+    .choices { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1.5rem; }
+    .choice-btn {
+      background: #161827;
+      border: 2px solid #2d3148;
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      text-align: left;
+      color: #e2e8f0;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: border-color .2s, background .2s;
+    }
+    .choice-btn:hover:not(:disabled) { border-color: #7c3aed; background: #1d1f35; }
+    .choice-btn.selected { border-color: #7c3aed; background: #1d1f35; }
+    .choice-btn.correct  { border-color: #22c55e; background: #14532d33; color: #86efac; }
+    .choice-btn.wrong    { border-color: #ef4444; background: #7f1d1d33; color: #fca5a5; }
+    .choice-btn.reveal   { border-color: #22c55e; background: #14532d22; }
+
+    /* Open answer */
+    .open-input {
+      width: 100%;
+      background: #161827;
+      border: 2px solid #2d3148;
+      border-radius: 10px;
+      padding: .75rem 1rem;
+      font-size: 1rem;
+      color: #e2e8f0;
+      outline: none;
+      margin-bottom: 1rem;
+      transition: border-color .2s;
+    }
+    .open-input:focus { border-color: #7c3aed; }
+    .open-input.correct { border-color: #22c55e; }
+    .open-input.wrong   { border-color: #ef4444; }
+
+    /* Feedback */
+    .feedback {
+      padding: .6rem 1rem;
+      border-radius: 8px;
+      font-size: .9rem;
+      margin-bottom: 1.2rem;
+      display: none;
+    }
+    .feedback.show { display: block; }
+    .feedback.correct { background: #14532d33; border: 1px solid #22c55e; color: #86efac; }
+    .feedback.wrong   { background: #7f1d1d33; border: 1px solid #ef4444;  color: #fca5a5; }
+    .feedback.neutral { background: #1e2130;   border: 1px solid #4c4f69;  color: #94a3b8; }
+
+    /* Buttons */
+    .actions { display: flex; gap: .75rem; flex-wrap: wrap; }
+    .btn {
+      padding: .65rem 1.4rem;
+      border-radius: 8px;
+      border: none;
+      font-size: .95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+    }
+    .btn-primary { background: #7c3aed; color: #fff; }
+    .btn-primary:hover { background: #6d28d9; }
+    .btn-secondary { background: #2d3148; color: #e2e8f0; }
+    .btn-secondary:hover { background: #3b3f60; }
+    .btn:disabled { opacity: .4; cursor: not-allowed; }
+
+    /* Results */
+    #results-section { display: none; }
+    .score-circle {
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      border: 6px solid #7c3aed;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      margin: 0 auto 1.5rem;
+      font-size: 2rem; font-weight: 700; color: #a78bfa;
+    }
+    .score-circle small { font-size: .75rem; color: #64748b; font-weight: 400; }
+    .result-item {
+      border: 1px solid #2d3148;
+      border-radius: 10px;
+      padding: 1rem;
+      margin-bottom: .75rem;
+      background: #161827;
+    }
+    .result-item .q-label { font-size: .78rem; color: #64748b; margin-bottom: .4rem; }
+    .result-item .q-body  { font-size: .95rem; line-height: 1.6; margin-bottom: .5rem; }
+    .ans-row { font-size: .85rem; margin-top: .3rem; }
+    .ans-row .label { color: #64748b; }
+    .ans-row.user-correct { color: #86efac; }
+    .ans-row.user-wrong   { color: #fca5a5; }
+    .ans-row.no-key       { color: #94a3b8; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Math Quiz</h1>
+  <a href="/reset" class="reset-link">Start over</a>
+</header>
+
+<div class="progress-bar-wrap">
+  <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+</div>
+
+<div class="card" id="quiz-section">
+  <div class="q-meta" id="q-meta">Question 1 of {{ total }}</div>
+  <div class="q-text" id="q-text"></div>
+  <div class="choices" id="choices"></div>
+  <input class="open-input" id="open-input" type="text" placeholder="Your answer…" style="display:none" />
+  <div class="feedback" id="feedback"></div>
+  <div class="actions">
+    <button class="btn btn-primary" id="btn-submit">Check Answer</button>
+    <button class="btn btn-secondary" id="btn-next" disabled>Next</button>
+    <button class="btn btn-secondary" id="btn-results" style="display:none">See Results</button>
+  </div>
+</div>
+
+<div class="card" id="results-section">
+  <div class="score-circle" id="score-circle">
+    <span id="score-text">—</span>
+    <small>score</small>
+  </div>
+  <div id="result-list"></div>
+  <div style="text-align:center;margin-top:1.5rem">
+    <a href="/reset" class="btn btn-primary" style="text-decoration:none;display:inline-block">Upload another file</a>
+  </div>
+</div>
+
+<script>
+const TOTAL = {{ total }};
+let current = 0;
+let answered = false;
+let userAnswers = new Array(TOTAL).fill(null);
+let questionData = [];
+
+async function loadQuestion(idx) {
+  const res = await fetch(`/api/question/${idx}`);
+  const q = await res.json();
+  questionData[idx] = q;
+
+  document.getElementById('q-meta').textContent = `Question ${idx + 1} of ${TOTAL}`;
+  document.getElementById('q-text').innerHTML = q.text;
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').textContent = '';
+
+  const choicesEl = document.getElementById('choices');
+  const openInput = document.getElementById('open-input');
+  const submitBtn = document.getElementById('btn-submit');
+  const nextBtn   = document.getElementById('btn-next');
+  const resultsBtn = document.getElementById('btn-results');
+
+  choicesEl.innerHTML = '';
+  openInput.style.display = 'none';
+  openInput.value = '';
+  openInput.className = 'open-input';
+  submitBtn.disabled = false;
+  nextBtn.disabled = true;
+  resultsBtn.style.display = 'none';
+  answered = false;
+
+  const pct = (idx / TOTAL) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+
+  if (q.choices && q.choices.length) {
+    q.choices.forEach((c, i) => {
+      const btn = document.createElement('button');
+      btn.className = 'choice-btn';
+      btn.innerHTML = c;
+      btn.dataset.index = i;
+      btn.addEventListener('click', () => selectChoice(btn));
+      choicesEl.appendChild(btn);
+    });
+  } else {
+    openInput.style.display = 'block';
+    openInput.focus();
+  }
+
+  // Re-render MathJax
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('quiz-section')]);
+  }
+}
+
+let selectedChoice = null;
+
+function selectChoice(btn) {
+  if (answered) return;
+  document.querySelectorAll('.choice-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  selectedChoice = btn;
+}
+
+document.getElementById('btn-submit').addEventListener('click', async () => {
+  if (answered) return;
+
+  const q = questionData[current];
+  let answer = '';
+
+  if (q.choices && q.choices.length) {
+    if (!selectedChoice) return;
+    answer = selectedChoice.innerHTML;
+  } else {
+    answer = document.getElementById('open-input').value.trim();
+    if (!answer) return;
+  }
+
+  userAnswers[current] = answer;
+  const res = await fetch('/api/answer', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({index: current, answer})
+  });
+  const data = await res.json();
+  answered = true;
+
+  const fb = document.getElementById('feedback');
+  const openInput = document.getElementById('open-input');
+
+  if (data.correct === true) {
+    fb.textContent = 'Correct!';
+    fb.className = 'feedback show correct';
+    if (selectedChoice) selectedChoice.classList.add('correct');
+    else openInput.classList.add('correct');
+  } else if (data.correct === false) {
+    fb.textContent = data.correct_answer
+      ? `Wrong. Correct answer: ${data.correct_answer}`
+      : 'Incorrect.';
+    fb.className = 'feedback show wrong';
+    if (selectedChoice) {
+      selectedChoice.classList.add('wrong');
+      // Highlight correct choice
+      document.querySelectorAll('.choice-btn').forEach(b => {
+        if (b.innerHTML.trim() === (data.correct_answer || '').trim()) b.classList.add('reveal');
+      });
+    } else {
+      openInput.classList.add('wrong');
+    }
+  } else {
+    fb.textContent = 'Answer recorded (no answer key).';
+    fb.className = 'feedback show neutral';
+    if (selectedChoice) selectedChoice.classList.add('correct');
+  }
+
+  document.querySelectorAll('.choice-btn').forEach(b => b.disabled = true);
+
+  const isLast = current === TOTAL - 1;
+  document.getElementById('btn-next').disabled = isLast;
+  if (isLast) document.getElementById('btn-results').style.display = 'inline-flex';
+
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([document.getElementById('feedback')]);
+  }
+});
+
+document.getElementById('btn-next').addEventListener('click', () => {
+  if (current < TOTAL - 1) {
+    current++;
+    selectedChoice = null;
+    loadQuestion(current);
+  }
+});
+
+document.getElementById('btn-results').addEventListener('click', async () => {
+  const res = await fetch('/api/results');
+  const data = await res.json();
+
+  document.getElementById('quiz-section').style.display = 'none';
+  const resultsSection = document.getElementById('results-section');
+  resultsSection.style.display = 'block';
+
+  document.getElementById('progress-bar').style.width = '100%';
+
+  const scoreText = document.getElementById('score-text');
+  if (data.scorable > 0) {
+    scoreText.textContent = `${data.scored}/${data.scorable}`;
+    document.getElementById('score-circle').style.borderColor =
+      data.scored === data.scorable ? '#22c55e' :
+      data.scored >= data.scorable / 2 ? '#f59e0b' : '#ef4444';
+  } else {
+    scoreText.textContent = `${data.total}`;
+    document.getElementById('score-circle').querySelector('small').textContent = 'questions';
+  }
+
+  const list = document.getElementById('result-list');
+  list.innerHTML = '';
+  data.details.forEach((d, i) => {
+    const div = document.createElement('div');
+    div.className = 'result-item';
+    let ansHtml = '';
+    if (d.correct_answer !== null) {
+      const cls = d.is_correct ? 'user-correct' : 'user-wrong';
+      ansHtml = `<div class="ans-row ${cls}">
+        <span class="label">Your answer:</span> ${d.user_answer || '—'}
+      </div>`;
+      if (!d.is_correct) {
+        ansHtml += `<div class="ans-row"><span class="label">Correct:</span> ${d.correct_answer}</div>`;
+      }
+    } else {
+      ansHtml = `<div class="ans-row no-key">
+        <span class="label">Your answer:</span> ${d.user_answer || '—'}
+      </div>`;
+    }
+    div.innerHTML = `
+      <div class="q-label">Question ${i + 1}</div>
+      <div class="q-body">${d.text}</div>
+      ${ansHtml}
+    `;
+    list.appendChild(div);
+  });
+
+  if (window.MathJax && MathJax.typesetPromise) {
+    MathJax.typesetPromise([resultsSection]);
+  }
+});
+
+// Keyboard: Enter to submit / next
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter') {
+    const submitBtn = document.getElementById('btn-submit');
+    const nextBtn = document.getElementById('btn-next');
+    if (!answered && !submitBtn.disabled) submitBtn.click();
+    else if (answered && !nextBtn.disabled) nextBtn.click();
+  }
+});
+
+// Start
+loadQuestion(0);
+</script>
+</body>
+</html>

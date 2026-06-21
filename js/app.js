@@ -40,7 +40,7 @@ const state = {
   allWords: STARTER_WORDS.concat(Array.isArray(saved.custom) ? saved.custom : []),
   custom: Array.isArray(saved.custom) ? saved.custom : [],
   known: new Set(Array.isArray(saved.known) ? saved.known : []),
-  category: saved.category || "ทั้งหมด",
+  category: saved.category || "ชีวิตประจำวัน",
   onlyUnknown: !!saved.onlyUnknown,
   deck: [],
   index: 0,

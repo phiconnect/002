@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ฝึกคำศัพท์ English → ไทย | Vocab Flashcards</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&family=Poppins:wght@500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="app-header">
+      <h1>📚 ฝึกคำศัพท์ <span class="accent">English → ไทย</span></h1>
+      <p class="subtitle">พลิกการ์ดเพื่อดูคำแปล แล้วบอกว่ารู้แล้วหรือยังไม่แม่น</p>
+    </header>
+
+    <!-- Controls -->
+    <section class="controls">
+      <label class="control">
+        <span>หมวดหมู่</span>
+        <select id="categorySelect"></select>
+      </label>
+      <label class="control checkbox">
+        <input type="checkbox" id="onlyUnknown" />
+        <span>ฝึกเฉพาะคำที่ยังไม่แม่น</span>
+      </label>
+      <button id="shuffleBtn" class="btn btn-ghost" type="button">🔀 สุ่ม</button>
+      <button id="resetBtn" class="btn btn-ghost" type="button">♻️ เริ่มใหม่</button>
+    </section>
+
+    <!-- Score panel -->
+    <section class="scorebar" aria-live="polite">
+      <div class="score-item"><span class="score-num" id="scoreKnown">0</span><span class="score-label">รู้แล้ว</span></div>
+      <div class="score-item"><span class="score-num" id="scoreRemaining">0</span><span class="score-label">เหลือ</span></div>
+      <div class="score-item"><span class="score-num" id="scorePercent">0%</span><span class="score-label">ความคืบหน้า</span></div>
+      <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </section>
+
+    <!-- Flashcard -->
+    <main class="card-area">
+      <div class="card-counter" id="cardCounter">การ์ดที่ 0 / 0</div>
+
+      <div class="flashcard" id="flashcard" tabindex="0" role="button" aria-label="พลิกการ์ด">
+        <div class="flashcard-inner" id="flashcardInner">
+          <div class="flashcard-face flashcard-front">
+            <span class="card-category" id="frontCategory"></span>
+            <span class="card-word" id="frontWord">—</span>
+            <span class="card-pos" id="frontPos"></span>
+            <span class="card-hint">แตะหรือกด Space เพื่อพลิก</span>
+          </div>
+          <div class="flashcard-face flashcard-back">
+            <span class="card-meaning" id="backMeaning">—</span>
+            <span class="card-example" id="backExample"></span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Rating buttons (shown after flip) -->
+      <div class="rating" id="ratingRow">
+        <button id="dontKnowBtn" class="btn btn-warn" type="button">🔁 ยังไม่แม่น</button>
+        <button id="flipBtn" class="btn btn-primary" type="button">↻ พลิกการ์ด</button>
+        <button id="knowBtn" class="btn btn-good" type="button">✅ รู้แล้ว</button>
+      </div>
+
+      <!-- Navigation -->
+      <div class="nav">
+        <button id="prevBtn" class="btn btn-nav" type="button">← ก่อนหน้า</button>
+        <button id="nextBtn" class="btn btn-nav" type="button">ถัดไป →</button>
+      </div>
+
+      <p class="empty-msg" id="emptyMsg" hidden>🎉 เก่งมาก! คุณจำคำในหมวดนี้ได้หมดแล้ว — กด “เริ่มใหม่” เพื่อฝึกอีกครั้ง</p>
+    </main>
+
+    <!-- Add your own word -->
+    <section class="add-word">
+      <details>
+        <summary>➕ เพิ่มคำศัพท์ของคุณเอง</summary>
+        <form id="addForm" class="add-form">
+          <input type="text" id="addEn" placeholder="คำอังกฤษ (เช่น cat)" required />
+          <input type="text" id="addTh" placeholder="คำแปลไทย (เช่น แมว)" required />
+          <button class="btn btn-primary" type="submit">เพิ่ม</button>
+        </form>
+        <p class="add-note">คำที่เพิ่มจะถูกบันทึกไว้ในเครื่องของคุณ (localStorage)</p>
+      </details>
+    </section>
+
+    <footer class="app-footer">
+      <p>คีย์ลัด: <kbd>Space</kbd> พลิก · <kbd>←</kbd> <kbd>→</kbd> เปลี่ยนการ์ด · <kbd>K</kbd> รู้แล้ว · <kbd>J</kbd> ยังไม่แม่น</p>
+    </footer>
+  </div>
+
+  <script src="js/words.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -182,6 +182,39 @@ body {
 .card-meaning { font-size: 2rem; font-weight: 700; line-height: 1.25; word-break: break-word; }
 .card-example { font-size: 0.95rem; color: #e0e7ff; max-width: 90%; line-height: 1.4; }
 
+/* Synonym memory aid */
+.syn-hint-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+  border: 1px solid rgba(99, 102, 241, 0.35);
+  border-radius: 99px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.syn-hint-btn:hover { background: rgba(99, 102, 241, 0.2); }
+.syn-hint-text {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--accent);
+  background: rgba(99, 102, 241, 0.1);
+  border-radius: 10px;
+  padding: 6px 14px;
+  max-width: 90%;
+}
+.card-syn {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #c7d2fe;
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  padding: 4px 12px;
+}
+[hidden] { display: none !important; }
+
 /* Rating + nav */
 .rating { display: flex; gap: 10px; width: 100%; }
 .rating .btn { flex: 1; }

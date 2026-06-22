@@ -66,6 +66,7 @@ const el = {
   synHintText: document.getElementById("synHintText"),
   backMeaning: document.getElementById("backMeaning"),
   backSyn: document.getElementById("backSyn"),
+  backForms: document.getElementById("backForms"),
   backExample: document.getElementById("backExample"),
   ratingRow: document.getElementById("ratingRow"),
   dontKnowBtn: document.getElementById("dontKnowBtn"),
@@ -80,9 +81,45 @@ const el = {
 };
 
 // ---- Helpers --------------------------------------------------------------
+// Preferred display order for categories: by level (easy -> hard), then idioms,
+// then topical sets, then user-added. Categories not listed fall to the end.
+const CATEGORY_ORDER = [
+  "ทั้งหมด",
+  "ชีวิตประจำวัน",
+  "ระดับกลาง",
+  "ขั้นสูง",
+  "สำนวน",
+  "อาหาร",
+  "การเดินทาง",
+  "อารมณ์",
+  "การงาน",
+  "ของฉัน",
+];
+
 function categories() {
   const set = new Set(state.allWords.map((w) => w.category).filter(Boolean));
-  return ["ทั้งหมด", ...[...set].sort()];
+  const all = ["ทั้งหมด", ...set];
+  return all.sort((a, b) => {
+    const ia = CATEGORY_ORDER.indexOf(a);
+    const ib = CATEGORY_ORDER.indexOf(b);
+    if (ia === -1 && ib === -1) return a.localeCompare(b);
+    if (ia === -1) return 1;
+    if (ib === -1) return -1;
+    return ia - ib;
+  });
+}
+
+// Build a "word family" string from the forms map, e.g.
+// "n. analysis · v. analyze · adj. analytical · adv. analytically".
+function wordFamilyFor(w) {
+  if (typeof WORD_FORMS === "undefined") return "";
+  const forms = WORD_FORMS[w.en];
+  if (!forms) return "";
+  const labels = [["n", "n."], ["v", "v."], ["adj", "adj."], ["adv", "adv."]];
+  const parts = labels
+    .filter(([key]) => forms[key])
+    .map(([key, label]) => `${label} ${forms[key]}`);
+  return parts.length >= 2 ? parts.join("  ·  ") : "";
 }
 
 // Look up an English synonym for a word (memory aid). Returns "" if none.
@@ -178,6 +215,11 @@ function renderCard() {
   el.synHintBtn.hidden = !syn;
   el.backSyn.textContent = syn ? "≈ " + syn : "";
   el.backSyn.hidden = !syn;
+
+  // Word family (noun / verb / adjective / adverb forms) on the back.
+  const family = wordFamilyFor(w);
+  el.backForms.textContent = family;
+  el.backForms.hidden = !family;
 
   // Highlight rating state for the current card
   const knownNow = state.known.has(wordId(w));

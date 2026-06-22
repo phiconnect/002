@@ -62,7 +62,10 @@ const el = {
   frontCategory: document.getElementById("frontCategory"),
   frontWord: document.getElementById("frontWord"),
   frontPos: document.getElementById("frontPos"),
+  synHintBtn: document.getElementById("synHintBtn"),
+  synHintText: document.getElementById("synHintText"),
   backMeaning: document.getElementById("backMeaning"),
+  backSyn: document.getElementById("backSyn"),
   backExample: document.getElementById("backExample"),
   ratingRow: document.getElementById("ratingRow"),
   dontKnowBtn: document.getElementById("dontKnowBtn"),
@@ -80,6 +83,14 @@ const el = {
 function categories() {
   const set = new Set(state.allWords.map((w) => w.category).filter(Boolean));
   return ["ทั้งหมด", ...[...set].sort()];
+}
+
+// Look up an English synonym for a word (memory aid). Returns "" if none.
+// A word may carry its own `syn` field; otherwise fall back to the shared map.
+function synonymFor(w) {
+  if (w.syn) return w.syn;
+  if (typeof SYNONYMS !== "undefined" && SYNONYMS[w.en]) return SYNONYMS[w.en];
+  return "";
 }
 
 function wordsInCategory() {
@@ -160,11 +171,26 @@ function renderCard() {
   el.backMeaning.textContent = w.th;
   el.backExample.textContent = w.example || "";
 
+  // Synonym memory aid: front shows a hint button, back reinforces it.
+  const syn = synonymFor(w);
+  el.synHintText.textContent = syn ? "≈ " + syn : "";
+  el.synHintText.hidden = true; // collapsed until the learner asks for the hint
+  el.synHintBtn.hidden = !syn;
+  el.backSyn.textContent = syn ? "≈ " + syn : "";
+  el.backSyn.hidden = !syn;
+
   // Highlight rating state for the current card
   const knownNow = state.known.has(wordId(w));
   el.knowBtn.textContent = knownNow ? "✅ รู้แล้ว (จำได้)" : "✅ รู้แล้ว";
 
   setFlipped(false);
+}
+
+// Reveal the synonym hint on the front without flipping the card.
+function revealHint() {
+  if (state.deck.length === 0 || el.synHintBtn.hidden) return;
+  el.synHintText.hidden = false;
+  el.synHintBtn.hidden = true;
 }
 
 function renderAll() {
@@ -261,6 +287,10 @@ el.shuffleBtn.addEventListener("click", () => {
 el.resetBtn.addEventListener("click", reset);
 el.flashcard.addEventListener("click", flip);
 el.flipBtn.addEventListener("click", flip);
+el.synHintBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // reveal the hint without flipping the card
+  revealHint();
+});
 el.knowBtn.addEventListener("click", () => rate(true));
 el.dontKnowBtn.addEventListener("click", () => rate(false));
 el.nextBtn.addEventListener("click", next);
@@ -298,6 +328,10 @@ document.addEventListener("keydown", (e) => {
     case "j":
     case "J":
       rate(false);
+      break;
+    case "h":
+    case "H":
+      revealHint();
       break;
   }
 });

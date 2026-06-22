@@ -160,7 +160,13 @@ body {
   text-align: center;
 }
 .flashcard-front { background: var(--card); color: var(--text); }
-.flashcard-back { background: linear-gradient(160deg, #6366f1, #4338ca); color: #fff; transform: rotateY(180deg); }
+.flashcard-back {
+  background: linear-gradient(160deg, #6366f1, #4338ca);
+  color: #fff;
+  transform: rotateY(180deg);
+  gap: 8px;
+  overflow-y: auto;
+}
 
 .card-category {
   font-size: 0.78rem;
@@ -212,6 +218,15 @@ body {
   background: rgba(255, 255, 255, 0.12);
   border-radius: 10px;
   padding: 4px 12px;
+}
+.card-forms {
+  font-size: 0.82rem;
+  line-height: 1.5;
+  color: #e0e7ff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  padding: 6px 12px;
+  max-width: 95%;
 }
 [hidden] { display: none !important; }
 

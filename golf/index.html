@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shoulder">
+<meta name="theme-color" content="#15573a">
+<title>Shoulder Sessions — Golf</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&family=Space+Grotesk:wght@500;700&display=swap');
+  :root{--green:#15573a;--green-d:#0f4530;--green-l:#2e7d52;--amber:#e08a1e;--ink:#1f2a26;--muted:#6b7a72;--line:#e2eae5;--paper:#f3f6f4;--card:#fff;--p1:#2f7d8c;--p2:#2e7d52;--p3:#d97316;}
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{background:var(--paper);color:var(--ink);font-family:'Sarabun',system-ui,sans-serif;line-height:1.5;}
+  body{max-width:540px;margin:0 auto;padding-bottom:120px;}
+  .mono{font-family:'Space Grotesk','Sarabun',monospace;font-variant-numeric:tabular-nums;}
+  header{background:var(--green);color:#fff;padding:20px 18px 16px;border-radius:0 0 22px 22px;position:relative;overflow:hidden;}
+  header::after{content:"⛳";position:absolute;right:-6px;top:-14px;font-size:96px;opacity:.08;transform:rotate(8deg);}
+  .eyebrow{font-size:11px;letter-spacing:2.5px;text-transform:uppercase;color:var(--amber);font-weight:700;}
+  h1{font-size:23px;font-weight:700;line-height:1.12;margin-top:3px;}
+  h1 small{display:block;font-family:'Space Grotesk',sans-serif;font-weight:500;font-size:12px;letter-spacing:.5px;opacity:.85;margin-top:4px;}
+  .seg{display:flex;gap:6px;background:#e8efeb;border-radius:13px;padding:5px;margin:13px 14px 2px;}
+  .seg button{flex:1;border:none;background:transparent;color:var(--muted);font-family:'Sarabun',sans-serif;font-weight:700;font-size:13px;padding:9px;border-radius:9px;cursor:pointer;transition:.15s;}
+  .seg button.on{background:#fff;color:var(--green);box-shadow:0 1px 4px rgba(0,0,0,.08);}
+  .tabs{display:flex;gap:8px;padding:12px 14px 4px;}
+  .tab{flex:1;background:var(--card);color:var(--muted);border:1.5px solid var(--line);border-radius:13px;padding:9px 4px;font-family:'Sarabun',sans-serif;font-weight:700;font-size:12.5px;cursor:pointer;transition:.18s;text-align:center;line-height:1.2;}
+  .tab small{display:block;font-weight:500;font-size:9.5px;opacity:.8;margin-top:2px;}
+  .tab[data-p="1"].on{background:var(--p1);border-color:var(--p1);color:#fff;}
+  .tab[data-p="2"].on{background:var(--p2);border-color:var(--p2);color:#fff;}
+  .tab[data-p="3"].on{background:var(--p3);border-color:var(--p3);color:#fff;}
+  .prog{display:flex;align-items:center;gap:14px;margin:12px 14px 6px;background:var(--card);border:1.5px solid var(--line);border-radius:16px;padding:13px 16px;}
+  .ring{width:54px;height:54px;flex:0 0 54px;}
+  .prog .pinfo b{font-size:14.5px;color:var(--green);}
+  .prog .pinfo p{font-size:12px;color:var(--muted);}
+  .resetday{margin-left:auto;border:1.5px solid var(--line);background:var(--card);color:var(--muted);border-radius:10px;padding:7px 11px;font-family:'Sarabun',sans-serif;font-size:12px;font-weight:600;cursor:pointer;}
+  .resetday:active{background:var(--paper);}
+  .intro{margin:8px 14px;font-size:12.5px;color:var(--muted);background:#eef3f0;border-radius:12px;padding:10px 13px;}
+  .intro b{color:var(--ink);}
+  .group{margin:14px 14px 0;}
+  .group h2{font-size:12px;letter-spacing:.4px;color:var(--green);font-weight:700;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+  .group h2::before{content:"";width:7px;height:7px;border-radius:2px;background:var(--amber);flex:0 0 auto;}
+  .ex{display:flex;align-items:center;gap:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px;padding:11px 13px;margin-bottom:9px;cursor:pointer;transition:.15s;user-select:none;}
+  .ex:active{transform:scale(.992);}
+  .thumb{flex:0 0 50px;width:50px;height:42px;background:#f1f6f3;border:1px solid #e4eee8;border-radius:10px;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+  .figsvg{width:48px;height:38px;}
+  .figsvg .ln{fill:none;stroke:#15573a;stroke-width:3;stroke-linecap:round;stroke-linejoin:round;}
+  .figsvg .eq{fill:none;stroke:#9aa7a0;stroke-width:2.2;stroke-linecap:round;}
+  .figsvg .fl{stroke:#c5d6cc;stroke-width:2.4;}
+  .figsvg .am{fill:none;stroke:#e08a1e;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round;}
+  .figsvg .amf{fill:#e08a1e;}
+  .figsvg .hd{fill:#eaf2ed;stroke:#15573a;stroke-width:2.2;}
+  .figsvg .dot{fill:#15573a;}
+  .badge{position:absolute;top:0;right:0;width:18px;height:18px;border-radius:0 9px 0 9px;background:var(--green-l);display:flex;align-items:center;justify-content:center;opacity:0;transform:scale(.4);transition:.15s;}
+  .badge svg{width:11px;height:11px;}
+  .ex .body{flex:1;min-width:0;}
+  .ex .en{font-weight:700;font-size:14px;color:var(--ink);line-height:1.2;}
+  .ex .th{font-size:11px;color:var(--muted);margin-top:1px;}
+  .reps{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:12.5px;color:var(--green);white-space:nowrap;flex:0 0 auto;text-align:right;}
+  .star{color:var(--amber);font-weight:700;}
+  .ex.done{background:#f0f6f2;border-color:#cfe6da;}
+  .ex.done .badge{opacity:1;transform:scale(1);}
+  .ex.done .en{color:var(--muted);text-decoration:line-through;text-decoration-color:#bcd0c5;}
+  .ex.done .reps{color:#a9bdb1;}
+  .ex.done .thumb{opacity:.55;}
+  /* schedule */
+  .wkcard{display:flex;align-items:center;gap:11px;background:var(--card);border:1.5px solid var(--line);border-left:4px solid var(--pc);border-radius:13px;padding:11px 13px;margin:0 14px 9px;transition:.15s;}
+  .wknum{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:14px;color:var(--pc);flex:0 0 auto;min-width:30px;}
+  .wkbody{flex:1;min-width:0;}
+  .wktop{display:flex;align-items:center;gap:7px;flex-wrap:wrap;}
+  .wkload{font-size:12.5px;font-weight:700;color:var(--ink);}
+  .dtag{font-size:9px;font-weight:700;letter-spacing:.5px;color:#c2680f;background:#fff3e3;border:1px solid #f0d9bd;padding:1px 7px;border-radius:20px;}
+  .wknote{font-size:11.5px;color:var(--muted);margin-top:1px;}
+  .wkdots{display:flex;align-items:center;gap:6px;flex:0 0 auto;}
+  .dotbtn{width:20px;height:20px;border-radius:50%;border:2px solid #c8d4cd;background:#fff;cursor:pointer;padding:0;transition:.15s;}
+  .dotbtn.on{background:var(--pc);border-color:var(--pc);}
+  .dotbtn:active{transform:scale(.9);}
+  .wkcount{font-family:'Space Grotesk',sans-serif;font-size:11px;font-weight:700;color:var(--muted);margin-left:3px;min-width:26px;text-align:right;}
+  .wkcard.wkdone{background:#f0f6f2;}
+  .dock{position:fixed;left:0;right:0;bottom:0;z-index:30;}
+  .dock-inner{max-width:540px;margin:0 auto;padding:0 14px 14px;}
+  .timer{background:var(--green-d);color:#fff;border-radius:18px;padding:13px 15px;box-shadow:0 8px 30px rgba(15,69,48,.32);display:flex;align-items:center;gap:14px;}
+  .tcount{font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:30px;letter-spacing:1px;min-width:84px;text-align:center;}
+  .tcount.run{color:var(--amber);}
+  .tpresets{display:flex;gap:6px;flex:1;flex-wrap:wrap;}
+  .tp{border:1.5px solid rgba(255,255,255,.28);background:rgba(255,255,255,.06);color:#fff;border-radius:10px;padding:7px 0;flex:1;min-width:46px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:13px;cursor:pointer;transition:.15s;}
+  .tp:active{background:rgba(255,255,255,.2);}
+  .tctrl{border:none;background:var(--amber);color:#241500;border-radius:11px;width:48px;height:48px;flex:0 0 48px;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+  .tlabel{font-size:10px;letter-spacing:1.5px;text-transform:uppercase;opacity:.7;margin-bottom:2px;font-weight:700;}
+  .flash{animation:flash .5s ease 3;}
+  @keyframes flash{50%{background:var(--amber);color:var(--green-d);}}
+  footer{font-size:11px;color:var(--muted);text-align:center;padding:18px 24px 4px;line-height:1.5;}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important;}}
+</style>
+</head>
+<body>
+  <header>
+    <div class="eyebrow">Golf Performance · 12 สัปดาห์</div>
+    <h1>เสริมแข็งแรงหัวไหล่<small>SHOULDER SESSIONS · STABILITY → STRENGTH → POWER</small></h1>
+  </header>
+
+  <div class="seg" id="seg">
+    <button class="on" data-m="w">ฝึกวันนี้</button>
+    <button data-m="s">ตาราง 12 สัปดาห์</button>
+  </div>
+
+  <div id="viewWorkout">
+    <div class="tabs" id="tabs">
+      <button class="tab on" data-p="1">PHASE 1<small>สัปดาห์ 1–4</small></button>
+      <button class="tab" data-p="2">PHASE 2<small>สัปดาห์ 5–8</small></button>
+      <button class="tab" data-p="3">PHASE 3<small>สัปดาห์ 9–12</small></button>
+    </div>
+    <div class="prog">
+      <svg class="ring" viewBox="0 0 36 36" aria-hidden="true">
+        <circle cx="18" cy="18" r="15.5" fill="none" stroke="#e6efe9" stroke-width="4"/>
+        <circle id="ringFg" cx="18" cy="18" r="15.5" fill="none" stroke="#2e7d52" stroke-width="4" stroke-linecap="round" stroke-dasharray="97.4" stroke-dashoffset="97.4" transform="rotate(-90 18 18)"/>
+        <text id="ringTxt" x="18" y="22" text-anchor="middle" font-size="10" fill="#15573a" font-family="Space Grotesk, sans-serif" font-weight="700">0%</text>
+      </svg>
+      <div class="pinfo"><b id="progCount">0 / 0 ท่า</b><p id="progLabel">เซสชันวันนี้</p></div>
+      <button class="resetday" id="resetDay">ล้างวันนี้</button>
+    </div>
+    <div class="intro" id="intro"></div>
+    <div id="content"></div>
+  </div>
+
+  <div id="viewSchedule" style="display:none">
+    <div id="sched"></div>
+  </div>
+
+  <footer>แตะที่ท่า/จุดเพื่อทำเครื่องหมายว่าเสร็จ · ความคืบหน้าถูกบันทึกอัตโนมัติ<br>คู่มือนี้เป็นโปรแกรมตัวอย่าง ไม่ใช่คำแนะนำทางการแพทย์ — ปรับร่วมกับโค้ช</footer>
+
+  <div class="dock"><div class="dock-inner"><div class="timer">
+    <div><div class="tlabel">พัก</div><div class="tcount mono" id="tcount">1:00</div></div>
+    <div class="tpresets">
+      <button class="tp" data-s="30">30s</button><button class="tp" data-s="60">60s</button>
+      <button class="tp" data-s="90">90s</button><button class="tp" data-s="120">2m</button>
+    </div>
+    <button class="tctrl" id="tctrl" aria-label="เริ่ม/หยุดพัก">▶</button>
+  </div></div></div>
+
+<script>
+const CHECK='<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg>';
+const W='<svg viewBox="0 0 64 48" class="figsvg">', Z='</svg>';
+const FIG={
+  catcow: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="15" cy="21" r="4"/><path class="ln" d="M19 22 Q32 12 45 21"/><line class="ln" x1="22" y1="24" x2="22" y2="41"/><line class="ln" x1="43" y1="24" x2="43" y2="41"/><path class="am" d="M28 9 q4 -4 8 0"/><path class="amf" d="M36 9 l1 -4 l3 3 z"/>'+Z,
+  openbook: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="13" cy="30" r="4"/><line class="ln" x1="17" y1="32" x2="40" y2="33"/><path class="ln" d="M40 33 l8 -3 v8"/><path class="ln" d="M40 33 l7 3 v6"/><line class="ln" x1="26" y1="32" x2="26" y2="41"/><line class="ln" x1="27" y1="31" x2="37" y2="15"/><circle class="dot" cx="37" cy="15" r="2"/><path class="am" d="M42 13 a11 11 0 0 1 5 8"/><path class="amf" d="M47 21 l1 -4 l3 3 z"/>'+Z,
+  wallslide: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="52" y1="8" x2="52" y2="44"/><circle class="hd" cx="30" cy="15" r="4"/><line class="ln" x1="30" y1="19" x2="30" y2="36"/><line class="ln" x1="30" y1="36" x2="24" y2="44"/><line class="ln" x1="30" y1="36" x2="36" y2="44"/><path class="ln" d="M30 23 l-7 -3 l-2 -8"/><path class="ln" d="M30 23 l7 -3 l2 -8"/><path class="am" d="M44 20 l0 -9"/><path class="amf" d="M44 11 l-2 3 h4 z"/>'+Z,
+  pullapart: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="32" cy="13" r="4"/><line class="ln" x1="32" y1="17" x2="32" y2="34"/><line class="ln" x1="32" y1="34" x2="26" y2="44"/><line class="ln" x1="32" y1="34" x2="38" y2="44"/><line class="ln" x1="32" y1="22" x2="17" y2="22"/><line class="ln" x1="32" y1="22" x2="47" y2="22"/><circle class="dot" cx="17" cy="22" r="2"/><circle class="dot" cx="47" cy="22" r="2"/><path class="eq" d="M19 22 q3 -3 6 0 q3 3 6 0 q3 -3 6 0 q3 3 6 0"/><path class="amf" d="M9 22 l4 -2 v4 z"/><path class="amf" d="M55 22 l-4 -2 v4 z"/>'+Z,
+  extrot: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="25" cy="12" r="4"/><line class="ln" x1="25" y1="16" x2="25" y2="36"/><line class="ln" x1="25" y1="36" x2="20" y2="44"/><line class="ln" x1="25" y1="36" x2="30" y2="44"/><line class="ln" x1="25" y1="24" x2="25" y2="30"/><line class="ln" x1="25" y1="30" x2="44" y2="27"/><circle class="dot" cx="44" cy="27" r="2"/><path class="eq" d="M44 27 q-4 3 -8 0 q-4 -3 -8 0"/><path class="am" d="M48 21 a10 10 0 0 1 2 9"/><path class="amf" d="M50 30 l2 -4 l2 4 z"/>'+Z,
+  introt: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="39" cy="12" r="4"/><line class="ln" x1="39" y1="16" x2="39" y2="36"/><line class="ln" x1="39" y1="36" x2="34" y2="44"/><line class="ln" x1="39" y1="36" x2="44" y2="44"/><line class="ln" x1="39" y1="24" x2="39" y2="30"/><line class="ln" x1="39" y1="30" x2="22" y2="29"/><circle class="dot" cx="22" cy="29" r="2"/><path class="eq" d="M22 29 q4 3 8 0 q4 -3 8 0"/><path class="am" d="M18 22 a10 10 0 0 0 -2 9"/><path class="amf" d="M16 31 l-2 -4 l4 0 z"/>'+Z,
+  ytw: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="32" cy="32" r="4"/><line class="ln" x1="32" y1="36" x2="32" y2="46"/><line class="ln" x1="29" y1="34" x2="18" y2="20"/><line class="ln" x1="35" y1="34" x2="46" y2="20"/><circle class="dot" cx="18" cy="20" r="2"/><circle class="dot" cx="46" cy="20" r="2"/><text x="32" y="14" text-anchor="middle" font-family="Space Grotesk,sans-serif" font-size="11" font-weight="700" fill="#e08a1e">Y</text>'+Z,
+  serratus: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="12" y1="8" x2="12" y2="44"/><circle class="hd" cx="36" cy="14" r="4"/><line class="ln" x1="36" y1="18" x2="36" y2="36"/><line class="ln" x1="36" y1="36" x2="30" y2="44"/><line class="ln" x1="36" y1="36" x2="42" y2="44"/><line class="ln" x1="36" y1="23" x2="18" y2="23"/><circle class="dot" cx="18" cy="23" r="2"/><path class="amf" d="M14 23 l4 -2 v4 z"/>'+Z,
+  landmine: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="dot" cx="10" cy="42" r="2"/><line class="ln" x1="11" y1="41" x2="40" y2="22"/><rect class="ln" x="37" y="19" width="6" height="6" rx="1" fill="#eaf2ed"/><circle class="hd" cx="49" cy="16" r="4"/><line class="ln" x1="49" y1="20" x2="50" y2="32"/><path class="ln" d="M50 32 l7 3 v9"/><path class="ln" d="M50 32 l-5 6 l-8 6"/><line class="ln" x1="49" y1="24" x2="42" y2="24"/><path class="am" d="M46 12 q8 -4 12 2"/><path class="amf" d="M58 14 l-1 -4 l3 2 z"/>'+Z,
+  row: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="16" cy="16" r="4"/><line class="ln" x1="20" y1="18" x2="40" y2="25"/><line class="ln" x1="40" y1="25" x2="40" y2="44"/><line class="ln" x1="40" y1="25" x2="46" y2="44"/><path class="ln" d="M30 21 l4 9"/><rect class="ln" x="30" y="29" width="8" height="4" rx="1" fill="#eaf2ed"/><path class="am" d="M52 30 l0 -9"/><path class="amf" d="M52 21 l-2 3 h4 z"/>'+Z,
+  facepull: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="54" y1="8" x2="54" y2="44"/><circle class="hd" cx="24" cy="14" r="4"/><line class="ln" x1="24" y1="18" x2="24" y2="36"/><line class="ln" x1="24" y1="36" x2="19" y2="44"/><line class="ln" x1="24" y1="36" x2="29" y2="44"/><path class="ln" d="M24 22 l8 -1 l4 2"/><path class="eq" d="M34 20 H54"/><path class="amf" d="M30 20 l4 -2 v4 z"/>'+Z,
+  pallof: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="54" y1="10" x2="54" y2="44"/><circle class="hd" cx="28" cy="13" r="4"/><line class="ln" x1="28" y1="17" x2="28" y2="34"/><line class="ln" x1="28" y1="34" x2="23" y2="44"/><line class="ln" x1="28" y1="34" x2="33" y2="44"/><line class="ln" x1="28" y1="22" x2="15" y2="22"/><line class="ln" x1="28" y1="25" x2="15" y2="25"/><path class="eq" d="M28 23 H54"/><path class="am" d="M40 32 q5 3 0 8"/>'+Z,
+  birddog: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="20" cy="24" r="4"/><line class="ln" x1="24" y1="25" x2="42" y2="25"/><line class="ln" x1="25" y1="27" x2="25" y2="42"/><line class="ln" x1="40" y1="27" x2="40" y2="42"/><line class="ln" x1="24" y1="25" x2="10" y2="19"/><line class="ln" x1="42" y1="25" x2="56" y2="19"/><path class="amf" d="M10 19 l4 0 l-2 -3 z"/><path class="amf" d="M56 19 l-4 0 l2 -3 z"/>'+Z,
+  sideplank: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="12" cy="31" r="4"/><line class="ln" x1="14" y1="44" x2="14" y2="34"/><line class="ln" x1="14" y1="34" x2="50" y2="44"/><line class="ln" x1="24" y1="37" x2="26" y2="24"/><path class="amf" d="M26 24 l-2 -1 l3 -2 z"/>'+Z,
+  pullup: W+'<line class="eq" x1="14" y1="8" x2="50" y2="8"/><line class="ln" x1="26" y1="10" x2="26" y2="20"/><line class="ln" x1="38" y1="10" x2="38" y2="20"/><circle class="hd" cx="32" cy="17" r="3"/><line class="ln" x1="32" y1="20" x2="32" y2="36"/><line class="ln" x1="32" y1="36" x2="27" y2="44"/><line class="ln" x1="32" y1="36" x2="37" y2="44"/><path class="am" d="M46 30 l0 -9"/><path class="amf" d="M46 21 l-2 3 h4 z"/>'+Z,
+  ohp: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="32" cy="21" r="4"/><line class="ln" x1="32" y1="25" x2="32" y2="38"/><line class="ln" x1="32" y1="38" x2="27" y2="44"/><line class="ln" x1="32" y1="38" x2="37" y2="44"/><line class="ln" x1="32" y1="26" x2="22" y2="13"/><line class="ln" x1="32" y1="26" x2="42" y2="13"/><rect class="ln" x="17" y="9" width="9" height="5" rx="1" fill="#eaf2ed"/><rect class="ln" x="38" y="9" width="9" height="5" rx="1" fill="#eaf2ed"/><path class="amf" d="M32 6 l-2 3 h4 z"/>'+Z,
+  mbchest: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="56" y1="10" x2="56" y2="44"/><circle class="hd" cx="20" cy="14" r="4"/><line class="ln" x1="20" y1="18" x2="20" y2="36"/><line class="ln" x1="20" y1="36" x2="15" y2="44"/><line class="ln" x1="20" y1="36" x2="25" y2="44"/><line class="ln" x1="20" y1="23" x2="33" y2="23"/><circle class="amf" cx="38" cy="23" r="5"/><path class="am" d="M46 23 H53" stroke-dasharray="2 3"/><path class="amf" d="M53 23 l-4 -2 v4 z"/>'+Z,
+  getup: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="ln" x1="13" y1="44" x2="16" y2="32"/><line class="ln" x1="16" y1="32" x2="28" y2="24"/><circle class="hd" cx="31" cy="21" r="4"/><line class="ln" x1="29" y1="25" x2="34" y2="11"/><path class="ln" d="M22 30 l10 4 l8 10"/><rect class="ln" x="31" y="7" width="7" height="5" rx="1" fill="#eaf2ed"/><path class="amf" d="M35 9 l-2 -3 l4 0 z"/>'+Z,
+  kneeraise: W+'<line class="eq" x1="14" y1="8" x2="50" y2="8"/><line class="ln" x1="27" y1="10" x2="27" y2="22"/><line class="ln" x1="37" y1="10" x2="37" y2="22"/><circle class="hd" cx="32" cy="15" r="3"/><line class="ln" x1="32" y1="22" x2="32" y2="32"/><path class="ln" d="M32 32 l11 0 l0 9"/><path class="am" d="M48 38 l0 -8"/><path class="amf" d="M48 30 l-2 3 h4 z"/>'+Z,
+  mbrot: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="56" y1="10" x2="56" y2="44"/><circle class="hd" cx="22" cy="14" r="4"/><line class="ln" x1="22" y1="18" x2="23" y2="36"/><line class="ln" x1="23" y1="36" x2="18" y2="44"/><line class="ln" x1="23" y1="36" x2="28" y2="44"/><line class="ln" x1="22" y1="23" x2="34" y2="21"/><line class="ln" x1="23" y1="26" x2="34" y2="25"/><circle class="amf" cx="39" cy="23" r="5"/><path class="am" d="M46 21 H53" stroke-dasharray="2 3"/><path class="amf" d="M53 21 l-4 -2 v4 z"/>'+Z,
+  mbslam: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="26" cy="22" r="4"/><line class="ln" x1="26" y1="26" x2="26" y2="38"/><line class="ln" x1="26" y1="38" x2="21" y2="44"/><line class="ln" x1="26" y1="38" x2="31" y2="44"/><line class="ln" x1="26" y1="25" x2="34" y2="11"/><circle class="amf" cx="37" cy="8" r="5"/><path class="am" d="M48 14 l0 22"/><path class="amf" d="M48 36 l-2 -4 h4 z"/>'+Z,
+  chop: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="56" y1="8" x2="56" y2="44"/><circle class="dot" cx="56" cy="11" r="2"/><circle class="hd" cx="24" cy="14" r="4"/><line class="ln" x1="24" y1="18" x2="24" y2="36"/><line class="ln" x1="24" y1="36" x2="19" y2="44"/><line class="ln" x1="24" y1="36" x2="29" y2="44"/><line class="ln" x1="24" y1="23" x2="34" y2="26"/><path class="eq" d="M34 26 L56 12"/><path class="am" d="M40 22 l-10 12"/><path class="amf" d="M30 34 l4 -1 l-1 4 z"/>'+Z,
+  lift: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><line class="eq" x1="56" y1="8" x2="56" y2="44"/><circle class="dot" cx="56" cy="40" r="2"/><circle class="hd" cx="24" cy="14" r="4"/><line class="ln" x1="24" y1="18" x2="24" y2="36"/><line class="ln" x1="24" y1="36" x2="19" y2="44"/><line class="ln" x1="24" y1="36" x2="29" y2="44"/><line class="ln" x1="24" y1="22" x2="34" y2="18"/><path class="eq" d="M34 18 L56 38"/><path class="am" d="M40 24 l-10 -12"/><path class="amf" d="M30 12 l4 1 l-1 -4 z"/>'+Z,
+  plankreach: W+'<line class="fl" x1="6" y1="44" x2="58" y2="44"/><circle class="hd" cx="16" cy="38" r="3"/><line class="ln" x1="40" y1="44" x2="44" y2="37"/><line class="ln" x1="44" y1="37" x2="19" y2="40"/><line class="ln" x1="44" y1="37" x2="54" y2="44"/><line class="ln" x1="19" y1="40" x2="8" y2="35"/><path class="amf" d="M8 35 l4 0 l-2 -3 z"/>'+Z,
+};
+
+const PCOL={1:'#2f7d8c',2:'#2e7d52',3:'#d97316'};
+const DATA={
+  1:{color:'#2f7d8c',intro:'<b>เป้าหมาย:</b> สร้างความนิ่งของข้อไหล่และสะบักก่อน ใช้ยางยืด/ดัมเบลเบา เน้น <b>เทคนิคและการคุมจังหวะ</b> — ฐานที่ทุก phase ต่อไปจะยืนอยู่บนมัน',
+    groups:[
+      {h:'A · Warm-up & Mobility',items:[['Cat–Cow','','8','catcow'],['Open Book','T-spine','8/ข้าง','openbook'],['Wall Slides','สะบัก','10','wallslide'],['Band Pull-Apart','','15','pullapart']]},
+      {h:'B · Activation — Cuff & Scapula',items:[['Band External Rotation','ท่าหัวใจ','3×15/ข้าง','extrot'],['Band Internal Rotation','','2×15/ข้าง','introt'],['Prone Y–T–W','คุมสะบัก','2×10','ytw'],['Serratus Wall Punch','','2×12','serratus']]},
+      {h:'C · Main Strength (เบา คุมฟอร์ม)',items:[['Half-Kneeling Landmine Press','ดันแนวเฉียง','3×10/ข้าง','landmine'],['Chest-Supported DB Row','','3×12','row'],['Face Pull','','3×15','facepull']]},
+      {h:'E · Accessory & Core',items:[['Pallof Press','ต้านบิด','3×12/ข้าง','pallof'],['Bird Dog','','3×8/ข้าง','birddog'],['Side Plank','','3×30s/ข้าง','sideplank']]},
+    ]},
+  2:{color:'#2e7d52',intro:'<b>เป้าหมาย:</b> ถมความแข็งแรงจริงบนฐานที่นิ่งแล้ว เพิ่มน้ำหนัก ลดจำนวนครั้ง · <span style="color:#c2680f">วอร์มอัพ &amp; mobility ใช้ชุดเดียวกับ Phase 1</span>',
+    groups:[
+      {h:'B · Activation (prime)',items:[['Band External Rotation','','2×15','extrot'],['Prone Y–T–W','','2×10','ytw']]},
+      {h:'C · Main Strength (หนักขึ้น)',items:[['Landmine Press','ยืน','4×8/ข้าง','landmine'],['Pull-Up / Lat Pulldown','','4×8','pullup'],['Single-Arm DB Row','','3×10/ข้าง','row'],['DB Overhead Press','ถ้าไหล่นิ่งดี ★','3×8/ข้าง','ohp']]},
+      {h:'D · Power (เริ่มแทรก)',items:[['Med Ball Chest Pass','เร็ว','3×8','mbchest']]},
+      {h:'E · Accessory & Core',items:[['Turkish Get-Up','','3×3/ข้าง','getup'],['Pallof Press','','3×12/ข้าง','pallof'],['Hanging Knee Raise','','3×10','kneeraise']]},
+    ]},
+  3:{color:'#d97316',intro:'<b>เป้าหมาย:</b> แปลงความแข็งแรงเป็นพลังหมุนแบบสวิง — ส่วนที่ <b>เห็นผลกับเกมมากสุด</b> ทำท่า power ตอนสดใหม่ (ต้นเซสชัน) ก่อนท่า strength',
+    groups:[
+      {h:'D · Power (ทำก่อน — ตอนสดใหม่)',items:[['Med Ball Rotational Throw','เลียนแบบสวิง','4×6/ข้าง','mbrot'],['Med Ball Overhead Slam','','3×8','mbslam'],['Cable Rotational Chop','สูง→ต่ำ','3×10/ข้าง','chop'],['Cable Lift','ต่ำ→สูง','3×10/ข้าง','lift']]},
+      {h:'C · Main Strength (คงไว้ — maintain)',items:[['Landmine Press','','3×6/ข้าง','landmine'],['Single-Arm Row','','3×8/ข้าง','row']]},
+      {h:'E · Core (anti-rotation)',items:[['Pallof Press (Iso hold)','','3×20s/ข้าง','pallof'],['Plank with Reach','','3×8/ข้าง','plankreach']]},
+    ]},
+};
+
+const WEEKS=[
+  {wk:1,p:1,freq:3,load:'RPE 5–6',note:'เรียนท่า เน้นฟอร์ม'},
+  {wk:2,p:1,freq:3,load:'RPE 6',note:'สร้างความนิ่ง'},
+  {wk:3,p:1,freq:3,load:'RPE 6–7',note:'เพิ่ม volume เล็กน้อย'},
+  {wk:4,p:1,freq:2,load:'RPE 5',note:'ฟื้นตัว',deload:true},
+  {wk:5,p:2,freq:3,load:'RPE 7',note:'เริ่มถมน้ำหนัก'},
+  {wk:6,p:2,freq:3,load:'RPE 7–8',note:'เพิ่มน้ำหนัก'},
+  {wk:7,p:2,freq:3,load:'RPE 8',note:'Peak strength'},
+  {wk:8,p:2,freq:2,load:'RPE 5–6',note:'ฟื้นตัว',deload:true},
+  {wk:9,p:3,freq:3,load:'เร็ว/ระเบิด',note:'เริ่ม med ball'},
+  {wk:10,p:3,freq:3,load:'เร็ว เต็มแรง',note:'เพิ่ม power output'},
+  {wk:11,p:3,freq:3,load:'เร็ว',note:'Peak power (2–3 ครั้ง)'},
+  {wk:12,p:3,freq:2,load:'เบา',note:'Test / ประเมินผล',deload:true},
+];
+
+/* ---------- persistence (localStorage + in-memory fallback) ---------- */
+const KEY='golf_shoulder_progress', KEY2='golf_shoulder_weeks';
+let progress={1:{},2:{},3:{}}, weeks={};
+const _mem={};
+const store={
+  get(k){ try{return localStorage.getItem(k);}catch(e){ return (k in _mem)?_mem[k]:null; } },
+  set(k,v){ try{localStorage.setItem(k,v);}catch(e){ _mem[k]=v; } }
+};
+function load(){
+  try{const r=store.get(KEY); if(r)progress={...progress,...JSON.parse(r)};}catch(e){}
+  try{const r=store.get(KEY2); if(r)weeks=JSON.parse(r);}catch(e){}
+}
+function save(){ store.set(KEY,JSON.stringify(progress)); }
+function save2(){ store.set(KEY2,JSON.stringify(weeks)); }
+
+/* ---------- workout view ---------- */
+let cur=1;
+const content=document.getElementById('content'), intro=document.getElementById('intro');
+const ringFg=document.getElementById('ringFg'), ringTxt=document.getElementById('ringTxt');
+const C=2*Math.PI*15.5; ringFg.setAttribute('stroke-dasharray',C.toFixed(1));
+function idFor(gi,ii){return cur+'-'+gi+'-'+ii;}
+function render(){
+  const d=DATA[cur];
+  document.querySelectorAll('.tab').forEach(t=>t.classList.toggle('on',+t.dataset.p===cur));
+  ringFg.setAttribute('stroke',d.color); ringTxt.setAttribute('fill',d.color);
+  intro.innerHTML=d.intro;
+  let html='';
+  d.groups.forEach((g,gi)=>{
+    html+='<div class="group"><h2>'+g.h+'</h2>';
+    g.items.forEach((it,ii)=>{
+      const id=idFor(gi,ii), done=!!progress[cur][id];
+      const star=it[1].includes('★')?'<span class="star">★</span> ':'';
+      const th=it[1]?'<div class="th">'+star+it[1].replace('★','').trim()+'</div>':'';
+      const fig=FIG[it[3]]||'';
+      html+='<div class="ex'+(done?' done':'')+'" data-id="'+id+'"><div class="thumb">'+fig+'<div class="badge">'+CHECK+'</div></div><div class="body"><div class="en">'+it[0]+'</div>'+th+'</div><div class="reps">'+it[2]+'</div></div>';
+    });
+    html+='</div>';
+  });
+  content.innerHTML=html;
+  content.querySelectorAll('.ex').forEach(el=>el.addEventListener('click',()=>{
+    const id=el.dataset.id; progress[cur][id]=!progress[cur][id];
+    el.classList.toggle('done',progress[cur][id]);
+    if(progress[cur][id]&&navigator.vibrate)navigator.vibrate(12);
+    updateRing(); save();
+  }));
+  updateRing();
+}
+function updateRing(){
+  const d=DATA[cur]; let total=0,done=0;
+  d.groups.forEach((g,gi)=>g.items.forEach((it,ii)=>{total++; if(progress[cur][idFor(gi,ii)])done++;}));
+  const pct=total?Math.round(done/total*100):0;
+  ringFg.setAttribute('stroke-dashoffset',(C*(1-(total?done/total:0))).toFixed(1));
+  ringTxt.textContent=pct+'%';
+  document.getElementById('progCount').textContent=done+' / '+total+' ท่า';
+  document.getElementById('progLabel').textContent=pct===100?'เสร็จครบแล้ว 💪':'เซสชัน Phase '+cur;
+}
+document.getElementById('tabs').addEventListener('click',e=>{const t=e.target.closest('.tab'); if(!t)return; cur=+t.dataset.p; render(); window.scrollTo({top:0,behavior:'smooth'});});
+document.getElementById('resetDay').addEventListener('click',()=>{progress[cur]={}; render(); save();});
+
+/* ---------- schedule view ---------- */
+const sched=document.getElementById('sched');
+const PLBL={1:'PHASE 1 · Foundation',2:'PHASE 2 · Strength',3:'PHASE 3 · Power'};
+const PRNG={1:'สัปดาห์ 1–4',2:'สัปดาห์ 5–8',3:'สัปดาห์ 9–12'};
+function renderSchedule(){
+  let html='<div class="intro">ความถี่หลัก <b>3 ครั้ง/สัปดาห์</b> · เว้น 48 ชม. (เช่น จ–พ–ศ) · สัปดาห์ <b>deload</b> ลดเหลือ 2 ครั้งเพื่อฟื้นตัว · ช่วงแข่งลดเป็น maintenance และเว้น 48 ชม. ก่อนลงสนาม</div>';
+  let lastP=0;
+  WEEKS.forEach(w=>{
+    if(w.p!==lastP){ lastP=w.p;
+      html+='<div class="group"><h2>'+PLBL[w.p]+'<span style="margin-left:auto;font-weight:500;color:#9aa7a0;font-size:11px;letter-spacing:0;text-transform:none">'+PRNG[w.p]+'</span></h2></div>';
+    }
+    const arr=weeks[w.wk]||Array(w.freq).fill(false);
+    const cnt=arr.filter(Boolean).length;
+    let dots='';
+    for(let i=0;i<w.freq;i++) dots+='<button class="dotbtn'+(arr[i]?' on':'')+'" data-wk="'+w.wk+'" data-i="'+i+'" aria-label="เซสชัน '+(i+1)+'"></button>';
+    html+='<div class="wkcard'+(cnt>=w.freq?' wkdone':'')+'" style="--pc:'+PCOL[w.p]+'">'+
+      '<div class="wknum">W'+w.wk+'</div>'+
+      '<div class="wkbody"><div class="wktop"><span class="wkload">'+w.load+'</span>'+(w.deload?'<span class="dtag">DELOAD</span>':'')+'</div><div class="wknote">'+w.note+'</div></div>'+
+      '<div class="wkdots">'+dots+'<span class="wkcount" id="wc'+w.wk+'">'+cnt+'/'+w.freq+'</span></div>'+
+      '</div>';
+  });
+  sched.innerHTML=html;
+  sched.querySelectorAll('.dotbtn').forEach(d=>d.addEventListener('click',()=>{
+    const wk=+d.dataset.wk, i=+d.dataset.i, f=WEEKS.find(x=>x.wk===wk).freq;
+    if(!weeks[wk]) weeks[wk]=Array(f).fill(false);
+    weeks[wk][i]=!weeks[wk][i];
+    d.classList.toggle('on',weeks[wk][i]);
+    const cnt=weeks[wk].filter(Boolean).length;
+    document.getElementById('wc'+wk).textContent=cnt+'/'+f;
+    d.closest('.wkcard').classList.toggle('wkdone',cnt>=f);
+    if(weeks[wk][i]&&navigator.vibrate)navigator.vibrate(12);
+    save2();
+  }));
+}
+
+/* ---------- mode switch ---------- */
+const segBtns=document.querySelectorAll('#seg button');
+function setMode(m){
+  document.getElementById('viewWorkout').style.display=m==='w'?'block':'none';
+  document.getElementById('viewSchedule').style.display=m==='s'?'block':'none';
+  segBtns.forEach(b=>b.classList.toggle('on',b.dataset.m===m));
+  if(m==='s') renderSchedule();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+segBtns.forEach(b=>b.addEventListener('click',()=>setMode(b.dataset.m)));
+
+/* ---------- rest timer ---------- */
+let dur=60,left=60,tid=null,running=false;
+const tcount=document.getElementById('tcount'), tctrl=document.getElementById('tctrl'), timerEl=document.querySelector('.timer');
+function fmt(s){return Math.floor(s/60)+':'+String(s%60).padStart(2,'0');}
+function paint(){tcount.textContent=fmt(left);}
+function setDur(s){dur=s;left=s;running=false;clearInterval(tid);tctrl.textContent='▶';tcount.classList.remove('run');paint();}
+function tick(){left--;paint(); if(left<=0){clearInterval(tid);running=false;tctrl.textContent='▶';tcount.classList.remove('run');left=dur;timerEl.classList.add('flash');if(navigator.vibrate)navigator.vibrate([120,60,120]);setTimeout(()=>{timerEl.classList.remove('flash');paint();},1600);}}
+tctrl.addEventListener('click',()=>{ if(running){running=false;clearInterval(tid);tctrl.textContent='▶';tcount.classList.remove('run');} else{running=true;tctrl.textContent='❚❚';tcount.classList.add('run');tid=setInterval(tick,1000);} });
+document.querySelectorAll('.tp').forEach(b=>b.addEventListener('click',()=>setDur(+b.dataset.s)));
+
+load(); render(); paint();
+</script>
+</body>
+</html>

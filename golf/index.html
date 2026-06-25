@@ -96,8 +96,8 @@
 </head>
 <body>
   <header>
-    <div class="eyebrow">Golf Performance · 12 สัปดาห์</div>
-    <h1>เสริมแข็งแรงหัวไหล่<small>SHOULDER SESSIONS · STABILITY → STRENGTH → POWER</small></h1>
+    <div class="eyebrow">Golf · ไหล่ซ้าย (ไหล่นำ) · 12 สัปดาห์</div>
+    <h1>โปรแกรมเฉพาะบุคคล — ไหล่ซ้าย<small>LEAD-SHOULDER FOCUS · STABILITY → STRENGTH → POWER</small></h1>
   </header>
 
   <div class="seg" id="seg">
@@ -171,25 +171,26 @@ const FIG={
 
 const PCOL={1:'#2f7d8c',2:'#2e7d52',3:'#d97316'};
 const DATA={
-  1:{color:'#2f7d8c',intro:'<b>เป้าหมาย:</b> สร้างความนิ่งของข้อไหล่และสะบักก่อน ใช้ยางยืด/ดัมเบลเบา เน้น <b>เทคนิคและการคุมจังหวะ</b> — ฐานที่ทุก phase ต่อไปจะยืนอยู่บนมัน',
+  1:{color:'#2f7d8c',intro:'<b>โปรไฟล์:</b> นักกอล์ฟถนัดขวา — ไหล่ <b>ซ้าย (ไหล่นำ)</b> อ่อนแรงกว่าฝั่งขวา<br><b>โฟกัส Phase 1:</b> ปลุก cuff &amp; สะบักซ้ายให้นิ่ง และไล่ความแข็งแรงให้ทันขวา · <b>กฎเหล็ก:</b> เล่นข้าง<b>ซ้ายก่อนเสมอ</b> (ตอนสดใหม่) และเพิ่มเซ็ตฝั่งซ้าย · <span style="color:#c2680f">ถ้ามีอาการเจ็บ หยุดและพบนักกายภาพก่อน</span>',
     groups:[
-      {h:'A · Warm-up & Mobility',items:[['Cat–Cow','','8','catcow'],['Open Book','T-spine','8/ข้าง','openbook'],['Wall Slides','สะบัก','10','wallslide'],['Band Pull-Apart','','15','pullapart']]},
-      {h:'B · Activation — Cuff & Scapula',items:[['Band External Rotation','ท่าหัวใจ','3×15/ข้าง','extrot'],['Band Internal Rotation','','2×15/ข้าง','introt'],['Prone Y–T–W','คุมสะบัก','2×10','ytw'],['Serratus Wall Punch','','2×12','serratus']]},
-      {h:'C · Main Strength (เบา คุมฟอร์ม)',items:[['Half-Kneeling Landmine Press','ดันแนวเฉียง','3×10/ข้าง','landmine'],['Chest-Supported DB Row','','3×12','row'],['Face Pull','','3×15','facepull']]},
-      {h:'E · Accessory & Core',items:[['Pallof Press','ต้านบิด','3×12/ข้าง','pallof'],['Bird Dog','','3×8/ข้าง','birddog'],['Side Plank','','3×30s/ข้าง','sideplank']]},
+      {h:'A · Warm-up & Mobility',items:[['Cat–Cow','','8','catcow'],['Open Book','T-spine — เน้นเปิดหมุนซ้าย','8/ข้าง','openbook'],['Wall Slides','คุมสะบัก','10','wallslide'],['Band Pull-Apart','','15','pullapart']]},
+      {h:'B · Activation ไหล่ซ้าย (lead)',items:[['Side-Lying External Rotation','แยก cuff หลังไหล่ซ้าย','3×12 ซ้าย','extrot'],['Band External Rotation','ซ้ายก่อน · ขวา 2 เซ็ต','3×15','extrot'],['Band Internal Rotation','','2×15/ข้าง','introt'],['Prone Y–T–W','คุมสะบักซ้าย','2×10','ytw'],['Serratus Wall Punch','สะบักซ้ายหมุนขึ้น','2×12','serratus']]},
+      {h:'C · Unilateral Strength (ซ้ายก่อน)',items:[['Half-Kneeling Landmine Press','ซ้ายก่อน · ขวา 2 เซ็ต','3×10','landmine'],['1-Arm Chest-Supported Row','ซ้ายก่อน · ขวา 2 เซ็ต','3×12','row'],['Face Pull','','3×15','facepull']]},
+      {h:'D · Anti-Rotation Core',items:[['Pallof Press','ต้านลำตัวบิดไปซ้าย','3×12/ข้าง','pallof'],['Bird Dog','','3×8/ข้าง','birddog'],['Side Plank','ค้างฝั่งซ้ายนานกว่า','30/20s','sideplank']]},
     ]},
-  2:{color:'#2e7d52',intro:'<b>เป้าหมาย:</b> ถมความแข็งแรงจริงบนฐานที่นิ่งแล้ว เพิ่มน้ำหนัก ลดจำนวนครั้ง · <span style="color:#c2680f">วอร์มอัพ &amp; mobility ใช้ชุดเดียวกับ Phase 1</span>',
+  2:{color:'#2e7d52',intro:'<b>โฟกัส Phase 2:</b> ถมแรงไหล่ซ้ายแบบ unilateral + เริ่มงาน <b>eccentric / เบรกแขน</b> ที่ไหล่นำต้องใช้ตอน follow-through · วอร์มอัพ &amp; mobility ใช้ชุด Phase 1 · <span style="color:#c2680f">ไหล่ซ้ายยังเล่นก่อนเสมอ</span>',
     groups:[
-      {h:'B · Activation (prime)',items:[['Band External Rotation','','2×15','extrot'],['Prone Y–T–W','','2×10','ytw']]},
-      {h:'C · Main Strength (หนักขึ้น)',items:[['Landmine Press','ยืน','4×8/ข้าง','landmine'],['Pull-Up / Lat Pulldown','','4×8','pullup'],['Single-Arm DB Row','','3×10/ข้าง','row'],['DB Overhead Press','ถ้าไหล่นิ่งดี ★','3×8/ข้าง','ohp']]},
-      {h:'D · Power (เริ่มแทรก)',items:[['Med Ball Chest Pass','เร็ว','3×8','mbchest']]},
-      {h:'E · Accessory & Core',items:[['Turkish Get-Up','','3×3/ข้าง','getup'],['Pallof Press','','3×12/ข้าง','pallof'],['Hanging Knee Raise','','3×10','kneeraise']]},
+      {h:'B · Activation (prime, ซ้าย)',items:[['Band External Rotation','ซ้ายก่อน · ขวา 2 เซ็ต','3×15','extrot'],['Prone Y–T–W','','2×10','ytw']]},
+      {h:'C · Unilateral Strength (หนักขึ้น)',items:[['Standing Landmine Press','ซ้ายก่อน · ขวา 3 เซ็ต','4×8','landmine'],['1-Arm DB Row','ซ้ายก่อน · ขวา 3 เซ็ต','4×10','row'],['Bottoms-Up KB Press','คุมความนิ่งไหล่ซ้าย','3×8 ซ้าย','ohp'],['1-Arm Lat Pulldown','ซ้ายก่อน · ขวา 2 เซ็ต','3×10','pullup'],['DB Overhead Press','เฉพาะถ้าไหล่ซ้ายนิ่งดี ★','3×8/ข้าง','ohp']]},
+      {h:'D · Eccentric / Deceleration',items:[['Eccentric External Rotation (L)','ลดช้า 3–4 วิ เบรกแขนซ้าย','3×8 ซ้าย','extrot'],['Rhythmic Stabilization (L)','เขย่าต้าน คุมไหล่ซ้าย','3×20s','pullapart']]},
+      {h:'E · Core & Carry',items:[['Turkish Get-Up','ซ้ายก่อน · ขวา 2 เซ็ต','3×3','getup'],['Pallof Press','','3×12/ข้าง','pallof'],['Suitcase Carry (L)','ต้านเอียง คุมสะบักซ้าย','3×20 ม.','sideplank']]},
     ]},
-  3:{color:'#d97316',intro:'<b>เป้าหมาย:</b> แปลงความแข็งแรงเป็นพลังหมุนแบบสวิง — ส่วนที่ <b>เห็นผลกับเกมมากสุด</b> ทำท่า power ตอนสดใหม่ (ต้นเซสชัน) ก่อนท่า strength',
+  3:{color:'#d97316',intro:'<b>โฟกัส Phase 3:</b> แปลงเป็นพลังหมุนสู่สวิง + คุม <b>การเบรกของไหล่ซ้าย</b> ตอน follow-through · ทำ Power ตอนสดใหม่ก่อน strength · <span style="color:#c2680f">คุม volume ฝั่งซ้าย อย่าให้ล้าเกิน</span>',
     groups:[
-      {h:'D · Power (ทำก่อน — ตอนสดใหม่)',items:[['Med Ball Rotational Throw','เลียนแบบสวิง','4×6/ข้าง','mbrot'],['Med Ball Overhead Slam','','3×8','mbslam'],['Cable Rotational Chop','สูง→ต่ำ','3×10/ข้าง','chop'],['Cable Lift','ต่ำ→สูง','3×10/ข้าง','lift']]},
-      {h:'C · Main Strength (คงไว้ — maintain)',items:[['Landmine Press','','3×6/ข้าง','landmine'],['Single-Arm Row','','3×8/ข้าง','row']]},
-      {h:'E · Core (anti-rotation)',items:[['Pallof Press (Iso hold)','','3×20s/ข้าง','pallof'],['Plank with Reach','','3×8/ข้าง','plankreach']]},
+      {h:'Warm-up · Power Prep',items:[['Dynamic Trunk Rotation','อุ่นลำตัวก่อนขว้าง','10/ข้าง','chop'],['MB Rotational Throw (เบา)','ไล่ระดับ 50→80%','2×6/ข้าง','mbrot']]},
+      {h:'D · Power (ทำก่อน — สดใหม่)',items:[['Med Ball Rotational Throw','เลียนสวิง ทิศ follow-through','4×6/ข้าง','mbrot'],['Med Ball Overhead Slam','','3×8','mbslam'],['Cable Rotational Chop','สูง→ต่ำ','3×10/ข้าง','chop'],['Cable Lift','ต่ำ→สูง','3×10/ข้าง','lift']]},
+      {h:'C · Maintain Strength (ซ้ายก่อน)',items:[['Standing Landmine Press','ซ้ายก่อน · ขวา 2 เซ็ต','3×6','landmine'],['1-Arm Row','ซ้ายก่อน · ขวา 2 เซ็ต','3×8','row']]},
+      {h:'E · Deceleration & Core',items:[['MB Catch & Decelerate (L)','รับแล้วหน่วง เบรกไหล่ซ้าย','3×6 ซ้าย','mbchest'],['Pallof Press (Iso hold)','','3×20s/ข้าง','pallof'],['Plank with Reach','','3×8/ข้าง','plankreach']]},
     ]},
 };
 

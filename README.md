@@ -7,6 +7,7 @@
 |-----|-------|----------|
 | 📚 **Vocab Flashcards** | `phiconnect.github.io/002/` | ฝึกคำศัพท์ English → ไทย แบบแฟลชการ์ด |
 | ⛳ **Golf Shoulder Sessions** | `phiconnect.github.io/002/golf/` | โปรแกรมเสริมแข็งแรงหัวไหล่สำหรับกอล์ฟ 12 สัปดาห์ |
+| 🏕️ **MK Asia Camp 2026 — Ops Handout** | `phiconnect.github.io/002/mk-camp/` | เอกสารคู่มือปฏิบัติการ (ops handout) สำหรับแคมป์ |
 
 ---
 

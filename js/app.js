@@ -62,6 +62,8 @@ const el = {
   frontCategory: document.getElementById("frontCategory"),
   frontWord: document.getElementById("frontWord"),
   frontPos: document.getElementById("frontPos"),
+  frontExamples: document.getElementById("frontExamples"),
+  exBtn: document.getElementById("exBtn"),
   synHintBtn: document.getElementById("synHintBtn"),
   synHintText: document.getElementById("synHintText"),
   backMeaning: document.getElementById("backMeaning"),
@@ -127,6 +129,30 @@ function wordFamilyFor(w) {
     .filter(([key]) => forms[key])
     .map(([key, label]) => `${label} ${forms[key]}`);
   return parts.length >= 2 ? parts.join("  ·  ") : "";
+}
+
+// Collect English example sentences for a word: its own `example` plus any
+// extra ones from the EXAMPLES map. Used to let learners guess from context
+// before flipping to the answer.
+function examplesFor(w) {
+  const list = [];
+  if (w.example) list.push(w.example);
+  if (typeof EXAMPLES !== "undefined" && Array.isArray(EXAMPLES[w.en])) {
+    for (const s of EXAMPLES[w.en]) if (s && list.indexOf(s) === -1) list.push(s);
+  }
+  return list;
+}
+
+// Bold the target word inside an example sentence (case-insensitive).
+function highlightWord(sentence, word) {
+  try {
+    const esc = word.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    const re = new RegExp("\\b(" + esc + ")\\b", "ig");
+    if (re.test(sentence)) return sentence.replace(re, "<b>$1</b>");
+  } catch (e) {
+    /* fall through */
+  }
+  return sentence;
 }
 
 // Look up an English synonym for a word (memory aid). Returns "" if none.
@@ -215,6 +241,14 @@ function renderCard() {
   el.backMeaning.textContent = w.th;
   el.backExample.textContent = w.example || "";
 
+  // Example sentences (guess-from-context): collapsed until requested.
+  state.curExamples = examplesFor(w);
+  state.exShown = 0;
+  el.frontExamples.innerHTML = "";
+  el.frontExamples.hidden = true;
+  el.exBtn.hidden = state.curExamples.length === 0;
+  el.exBtn.textContent = "📝 ดูประโยคตัวอย่าง";
+
   // Synonym memory aid: front shows a hint button, back reinforces it.
   const syn = synonymFor(w);
   el.synHintText.textContent = syn ? "≈ " + syn : "";
@@ -233,6 +267,26 @@ function renderCard() {
   el.knowBtn.textContent = knownNow ? "✅ รู้แล้ว (จำได้)" : "✅ รู้แล้ว";
 
   setFlipped(false);
+}
+
+// Reveal one more example sentence on the front (without flipping the card),
+// so the learner can guess the meaning from several contexts first.
+function revealExample() {
+  if (state.deck.length === 0 || !state.curExamples) return;
+  if (state.exShown >= state.curExamples.length) return;
+  const w = state.deck[state.index];
+  const div = document.createElement("div");
+  div.className = "ex-sentence";
+  div.innerHTML = highlightWord(state.curExamples[state.exShown], w.en);
+  el.frontExamples.appendChild(div);
+  el.frontExamples.hidden = false;
+  state.exShown++;
+  const n = state.curExamples.length;
+  if (state.exShown >= n) {
+    el.exBtn.hidden = true;
+  } else {
+    el.exBtn.textContent = "📝 ดูอีกประโยค (" + state.exShown + "/" + n + ")";
+  }
 }
 
 // Reveal the synonym hint on the front without flipping the card.
@@ -336,6 +390,10 @@ el.shuffleBtn.addEventListener("click", () => {
 el.resetBtn.addEventListener("click", reset);
 el.flashcard.addEventListener("click", flip);
 el.flipBtn.addEventListener("click", flip);
+el.exBtn.addEventListener("click", (e) => {
+  e.stopPropagation(); // show an example without flipping the card
+  revealExample();
+});
 el.synHintBtn.addEventListener("click", (e) => {
   e.stopPropagation(); // reveal the hint without flipping the card
   revealHint();
@@ -381,6 +439,10 @@ document.addEventListener("keydown", (e) => {
     case "h":
     case "H":
       revealHint();
+      break;
+    case "e":
+    case "E":
+      revealExample();
       break;
   }
 });

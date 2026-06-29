@@ -159,7 +159,7 @@ body {
   padding: 24px;
   text-align: center;
 }
-.flashcard-front { background: var(--card); color: var(--text); }
+.flashcard-front { background: var(--card); color: var(--text); overflow-y: auto; }
 .flashcard-back {
   background: linear-gradient(160deg, #6366f1, #4338ca);
   color: #fff;
@@ -187,6 +187,38 @@ body {
 .card-hint { position: absolute; bottom: 16px; font-size: 0.75rem; color: var(--muted); }
 .card-meaning { font-size: 2rem; font-weight: 700; line-height: 1.25; word-break: break-word; }
 .card-example { font-size: 0.95rem; color: #e0e7ff; max-width: 90%; line-height: 1.4; }
+
+/* Example sentences (guess from context) */
+.ex-btn {
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #b45309;
+  background: rgba(217, 119, 6, 0.1);
+  border: 1px solid rgba(217, 119, 6, 0.35);
+  border-radius: 99px;
+  padding: 5px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+.ex-btn:hover { background: rgba(217, 119, 6, 0.2); }
+.card-examples {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 95%;
+}
+.ex-sentence {
+  font-size: 0.92rem;
+  line-height: 1.4;
+  color: var(--text);
+  background: #f1f5f9;
+  border-left: 3px solid var(--accent);
+  border-radius: 8px;
+  padding: 7px 11px;
+  text-align: left;
+}
+.ex-sentence b { color: var(--accent); }
 
 /* Synonym memory aid */
 .syn-hint-btn {

@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>HRV Trend</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Thai:wght@400;500;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    color-scheme: light;
+    --surface-1: #fcfcfb;
+    --page: #f9f9f7;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --muted: #898781;
+    --grid: #e1e0d9;
+    --baseline: #c3c2b7;
+    --series-1: #2a78d6;   /* รายวัน (blue) */
+    --series-2: #eb6834;   /* เฉลี่ย 7 วัน (orange) */
+    --band: rgba(42,120,214,0.08);
+    --good: #006300;
+    --crit: #d03b3b;
+    --border: rgba(11,11,11,0.10);
+    --radius: 16px;
+    font-family: "Noto Sans Thai", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #f0efec;
+      --text-secondary: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+      --series-1: #3987e5; --series-2: #d95926; --band: rgba(57,135,229,0.12);
+      --good: #0ca30c; --crit: #d03b3b; --border: rgba(255,255,255,0.10);
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --surface-1: #1a1a19; --page: #0d0d0d; --text-primary: #f0efec;
+    --text-secondary: #c3c2b7; --muted: #898781; --grid: #2c2c2a; --baseline: #383835;
+    --series-1: #3987e5; --series-2: #d95926; --band: rgba(57,135,229,0.12);
+    --good: #0ca30c; --crit: #d03b3b; --border: rgba(255,255,255,0.10);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--page); color: var(--text-primary); padding: 20px 16px 60px; display: flex; justify-content: center; }
+  .wrap { width: 100%; max-width: 760px; display: flex; flex-direction: column; gap: 16px; }
+  header h1 { font-size: 1.5rem; display: flex; align-items: center; gap: 8px; }
+  header p { color: var(--text-secondary); font-size: 0.92rem; margin-top: 2px; }
+  .topbar { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+  .theme-btn { flex: 0 0 auto; background: var(--surface-1); border: 1px solid var(--border); color: var(--text-secondary); border-radius: 10px; padding: 7px 11px; font: inherit; font-size: 0.85rem; cursor: pointer; }
+
+  .card { background: var(--surface-1); border: 1px solid var(--border); border-radius: var(--radius); padding: 16px; }
+  details.card > summary { cursor: pointer; font-weight: 700; color: var(--text-primary); list-style: none; }
+  details.card > summary::-webkit-details-marker { display: none; }
+  details.card > summary::before { content: "▸ "; color: var(--muted); }
+  details.card[open] > summary::before { content: "▾ "; }
+  textarea { width: 100%; min-height: 120px; margin-top: 12px; background: var(--page); color: var(--text-primary); border: 1px solid var(--border); border-radius: 10px; padding: 10px; font-family: ui-monospace, "SF Mono", Menlo, monospace; font-size: 0.85rem; resize: vertical; }
+  .row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .btn { font: inherit; font-weight: 600; border: none; border-radius: 10px; padding: 9px 14px; cursor: pointer; }
+  .btn-primary { background: var(--series-1); color: #fff; }
+  .btn-ghost { background: color-mix(in srgb, var(--muted) 18%, transparent); color: var(--text-primary); }
+  .hint { font-size: 0.8rem; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+
+  /* stat tiles */
+  .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(96px, 1fr)); gap: 10px; }
+  .tile { background: var(--surface-1); border: 1px solid var(--border); border-radius: 12px; padding: 12px; text-align: center; }
+  .tile .v { font-size: 1.45rem; font-weight: 700; }
+  .tile .u { font-size: 0.72rem; color: var(--muted); font-weight: 400; }
+  .tile .l { font-size: 0.74rem; color: var(--text-secondary); margin-top: 2px; }
+  .tile .d { font-size: 0.78rem; font-weight: 700; margin-top: 3px; }
+  .up { color: var(--good); } .down { color: var(--crit); } .flat { color: var(--muted); }
+
+  /* chart */
+  .chart-card { position: relative; }
+  svg { width: 100%; height: auto; display: block; touch-action: none; }
+  .gl { stroke: var(--grid); stroke-width: 1; }
+  .axis { stroke: var(--baseline); stroke-width: 1; }
+  .tick { fill: var(--muted); font-size: 11px; }
+  .tick.y { font-variant-numeric: tabular-nums; }
+  .band { fill: var(--band); }
+  .meanline { stroke: var(--baseline); stroke-width: 1.5; stroke-dasharray: 4 4; }
+  .raw { fill: none; stroke: var(--series-1); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .avg { fill: none; stroke: var(--series-2); stroke-width: 2.5; stroke-linejoin: round; stroke-linecap: round; }
+  .dot { fill: var(--series-1); }
+  .crosshair { stroke: var(--muted); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0; }
+  .focus { opacity: 0; }
+  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 10px; font-size: 0.85rem; color: var(--text-secondary); }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .swatch { width: 14px; height: 3px; border-radius: 2px; display: inline-block; }
+  .tooltip { position: absolute; pointer-events: none; background: var(--text-primary); color: var(--surface-1); font-size: 0.78rem; padding: 6px 9px; border-radius: 8px; opacity: 0; transform: translate(-50%, -115%); white-space: nowrap; line-height: 1.35; }
+  .tooltip b { font-variant-numeric: tabular-nums; }
+  .empty { text-align: center; color: var(--muted); padding: 40px 10px; font-size: 0.95rem; }
+
+  /* table */
+  table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+  th, td { padding: 6px 8px; text-align: right; border-bottom: 1px solid var(--border); font-variant-numeric: tabular-nums; }
+  th:first-child, td:first-child { text-align: left; }
+  thead th { color: var(--muted); font-weight: 600; }
+  .toggle-link { background: none; border: none; color: var(--series-1); font: inherit; font-size: 0.85rem; cursor: pointer; padding: 0; }
+  footer { font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.5; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="topbar">
+    <header>
+      <h1>💓 HRV Trend</h1>
+      <p>ดูแนวโน้มค่า HRV (Heart Rate Variability) จากข้อมูลที่คุณ export มาจาก Fitbit หรืออุปกรณ์อื่น</p>
+    </header>
+    <button class="theme-btn" id="themeBtn" type="button">🌓 ธีม</button>
+  </div>
+
+  <details class="card" id="inputCard">
+    <summary>วางข้อมูล HRV ของคุณ</summary>
+    <textarea id="input" placeholder="วางข้อมูลที่นี่ — รองรับหลายรูปแบบ เช่น:&#10;2026-11-01, 42&#10;2026-11-02, 45&#10;...&#10;หรือ CSV ที่มีหัวตาราง (timestamp, rmssd) หรือ JSON จาก Google Takeout"></textarea>
+    <div class="row">
+      <button class="btn btn-primary" id="renderBtn" type="button">แสดงกราฟ</button>
+      <button class="btn btn-ghost" id="sampleBtn" type="button">ใส่ข้อมูลตัวอย่าง</button>
+      <button class="btn btn-ghost" id="clearBtn" type="button">ล้าง</button>
+    </div>
+    <p class="hint">
+      <b>วิธีดึง HRV จาก Fitbit:</b> แอป Fitbit → Today → Health Metrics → HRV (ดูรายคืน) ·
+      หรือดึงข้อมูลดิบผ่าน <b>Google Takeout → Fitbit</b> (ไฟล์ <i>Daily Heart Rate Variability Summary</i> เป็น CSV/JSON) แล้ววางที่นี่<br>
+      แต่ละแถวต้องมี <b>วันที่</b> และ <b>ค่า HRV (ms)</b> — รูปแบบวันที่/ตัวคั่นยืดหยุ่น ระบบจะอ่านให้อัตโนมัติ · ข้อมูลเก็บในเครื่องคุณเท่านั้น (localStorage)
+    </p>
+  </details>
+
+  <div class="stats" id="stats"></div>
+
+  <div class="card chart-card" id="chartCard">
+    <div id="chartArea"><div class="empty" id="empty">ยังไม่มีข้อมูล — กด “ใส่ข้อมูลตัวอย่าง” เพื่อดูตัวอย่าง หรือวางข้อมูลของคุณ</div></div>
+    <div class="legend" id="legend" hidden>
+      <span><i class="swatch" style="background:var(--series-1)"></i> รายวัน</span>
+      <span><i class="swatch" style="background:var(--series-2)"></i> เฉลี่ย 7 วัน</span>
+      <span><i class="swatch" style="background:var(--baseline)"></i> เส้นฐาน (ค่าเฉลี่ย ± SD)</span>
+    </div>
+    <div class="tooltip" id="tooltip"></div>
+  </div>
+
+  <div class="card" id="tableCard" hidden>
+    <button class="toggle-link" id="tableToggle" type="button">▸ ดูเป็นตาราง</button>
+    <div id="tableWrap" hidden style="margin-top:10px;max-height:300px;overflow:auto"></div>
+  </div>
+
+  <footer>
+    HRV สูงขึ้น = การฟื้นตัว/สมดุลระบบประสาทอัตโนมัติมักจะดี · ดู <b>แนวโน้มของตัวเอง</b> (เทียบกับเส้นฐานของคุณ) สำคัญกว่าค่าสัมบูรณ์หรือเทียบกับคนอื่น<br>
+    เครื่องมือนี้ใช้เพื่อการเรียนรู้/ติดตามเท่านั้น ไม่ใช่คำแนะนำทางการแพทย์
+  </footer>
+</div>
+
+<script>
+"use strict";
+const KEY = "hrv-trend-data";
+const $ = (id) => document.getElementById(id);
+
+/* ---------- parsing (flexible) ---------- */
+function normDate(s) {
+  s = s.trim();
+  let m = s.match(/^(\d{4})[-/](\d{1,2})[-/](\d{1,2})/);        // YYYY-MM-DD
+  if (m) return mk(+m[1], +m[2], +m[3]);
+  m = s.match(/^(\d{1,2})[-/](\d{1,2})[-/](\d{4})/);            // DD/MM/YYYY
+  if (m) return mk(+m[3], +m[2], +m[1]);
+  const t = Date.parse(s);
+  if (!isNaN(t)) { const d = new Date(t); return mk(d.getFullYear(), d.getMonth() + 1, d.getDate()); }
+  return null;
+}
+function mk(y, mo, d) {
+  if (mo < 1 || mo > 12 || d < 1 || d > 31) return null;
+  const iso = y + "-" + String(mo).padStart(2, "0") + "-" + String(d).padStart(2, "0");
+  return { iso, t: Date.UTC(y, mo - 1, d) };
+}
+function fromJSON(arr) {
+  if (!Array.isArray(arr)) arr = [arr];
+  const out = [];
+  for (const o of arr) {
+    if (!o || typeof o !== "object") continue;
+    const ds = o.timestamp || o.dateTime || o.date || o.day || o.dateOfSleep;
+    let v = null;
+    if (o.value && typeof o.value === "object") v = o.value.dailyRmssd ?? o.value.deepRmssd ?? o.value.rmssd;
+    v = v ?? o.dailyRmssd ?? o.rmssd ?? o.hrv ?? (typeof o.value === "number" ? o.value : null);
+    const d = ds ? normDate(String(ds)) : null;
+    if (d && v != null && isFinite(+v)) out.push({ date: d.iso, t: d.t, value: +v });
+  }
+  return out;
+}
+function parseData(text) {
+  const t = text.trim();
+  if (!t) return [];
+  if (t[0] === "[" || t[0] === "{") { try { return clean(fromJSON(JSON.parse(t))); } catch (e) { /* fall through */ } }
+  const out = [];
+  for (const raw of t.split(/\r?\n/)) {
+    const line = raw.trim();
+    if (!line) continue;
+    const dm = line.match(/\d{4}[-/]\d{1,2}[-/]\d{1,2}|\d{1,2}[-/]\d{1,2}[-/]\d{4}/);
+    if (!dm) continue;
+    const d = normDate(dm[0]);
+    if (!d) continue;
+    const rest = line.replace(dm[0], " ");
+    const nm = rest.match(/-?\d+(?:\.\d+)?/);
+    if (!nm) continue;
+    const v = parseFloat(nm[0]);
+    if (isFinite(v) && v > 0 && v < 400) out.push({ date: d.iso, t: d.t, value: v });
+  }
+  return clean(out);
+}
+function clean(arr) {
+  const map = new Map();
+  for (const r of arr) map.set(r.iso || r.date, r); // dedupe by date, last wins
+  return [...map.values()].sort((a, b) => a.t - b.t);
+}
+
+/* ---------- stats ---------- */
+function rollingAvg(vals, win) {
+  return vals.map((_, i) => {
+    const s = Math.max(0, i - win + 1);
+    const slice = vals.slice(s, i + 1);
+    return slice.reduce((a, b) => a + b, 0) / slice.length;
+  });
+}
+function mean(a) { return a.reduce((x, y) => x + y, 0) / a.length; }
+function sd(a) { const m = mean(a); return Math.sqrt(mean(a.map((x) => (x - m) ** 2))); }
+function slope(data) { // linear regression over index
+  const n = data.length; if (n < 2) return 0;
+  const xs = data.map((_, i) => i), ys = data.map((d) => d.value);
+  const mx = mean(xs), my = mean(ys);
+  let num = 0, den = 0;
+  for (let i = 0; i < n; i++) { num += (xs[i] - mx) * (ys[i] - my); den += (xs[i] - mx) ** 2; }
+  return den ? num / den : 0;
+}
+
+/* ---------- render ---------- */
+let DATA = [];
+function render(data) {
+  DATA = data;
+  const hasData = data.length >= 2;
+  $("empty") && ($("empty").style.display = hasData ? "none" : "");
+  $("legend").hidden = !hasData;
+  $("tableCard").hidden = data.length === 0;
+  renderStats(data);
+  renderTable(data);
+  if (!hasData) { const old = $("chartSvg"); if (old) old.remove(); return; }
+  drawChart(data);
+}
+
+function renderStats(data) {
+  const box = $("stats");
+  if (data.length === 0) { box.innerHTML = ""; return; }
+  const vals = data.map((d) => d.value);
+  const latest = vals[vals.length - 1];
+  const avg7 = mean(vals.slice(-7));
+  const base = mean(vals.slice(-30));
+  const mn = Math.min(...vals), mx = Math.max(...vals);
+  const sl = slope(data);
+  const change = sl * (data.length - 1); // modeled change over whole range
+  let dir = "flat", arrow = "→ คงที่";
+  if (change > 1) { dir = "up"; arrow = "↑ ขึ้น"; }
+  else if (change < -1) { dir = "down"; arrow = "↓ ลง"; }
+  const dLatest = latest - base;
+  const tiles = [
+    { v: Math.round(latest), u: "ms", l: "ล่าสุด", d: (dLatest >= 0 ? "+" : "") + dLatest.toFixed(0) + " vs ฐาน", dc: dLatest >= 0 ? "up" : "down" },
+    { v: avg7.toFixed(0), u: "ms", l: "เฉลี่ย 7 วัน" },
+    { v: base.toFixed(0), u: "ms", l: "เส้นฐาน (30 วัน)" },
+    { v: Math.round(mn) + "–" + Math.round(mx), u: "ms", l: "ต่ำ–สูงสุด" },
+    { v: arrow.split(" ")[0], u: "", l: "แนวโน้ม", d: arrow.split(" ")[1], dc: dir },
+  ];
+  box.innerHTML = tiles.map((t) =>
+    '<div class="tile"><div class="v">' + t.v + (t.u ? ' <span class="u">' + t.u + '</span>' : '') + '</div>' +
+    '<div class="l">' + t.l + '</div>' +
+    (t.d ? '<div class="d ' + (t.dc || 'flat') + '">' + t.d + '</div>' : '') + '</div>'
+  ).join("");
+}
+
+const W = 760, H = 340, M = { l: 40, r: 14, t: 14, b: 34 };
+const PW = W - M.l - M.r, PH = H - M.t - M.b;
+function drawChart(data) {
+  const vals = data.map((d) => d.value);
+  const avg = rollingAvg(vals, 7);
+  const m = mean(vals.slice(-30)), s = sd(vals.slice(-30));
+  const tMin = data[0].t, tMax = data[data.length - 1].t, tSpan = tMax - tMin || 1;
+  let lo = Math.min(...vals, m - s), hi = Math.max(...vals, m + s);
+  const pad = (hi - lo) * 0.12 || 5; lo -= pad; hi -= 0; hi += pad; lo = Math.max(0, lo);
+  const X = (t) => M.l + ((t - tMin) / tSpan) * PW;
+  const Y = (v) => M.t + (1 - (v - lo) / (hi - lo)) * PH;
+  const Xi = (i) => X(data[i].t);
+
+  // y ticks
+  const ticks = 5, step = (hi - lo) / ticks;
+  let g = "";
+  for (let i = 0; i <= ticks; i++) {
+    const v = lo + step * i, y = Y(v);
+    g += '<line class="gl" x1="' + M.l + '" y1="' + y.toFixed(1) + '" x2="' + (W - M.r) + '" y2="' + y.toFixed(1) + '"/>';
+    g += '<text class="tick y" x="' + (M.l - 6) + '" y="' + (y + 3.5).toFixed(1) + '" text-anchor="end">' + Math.round(v) + '</text>';
+  }
+  // baseline band + mean
+  const band = '<rect class="band" x="' + M.l + '" y="' + Y(m + s).toFixed(1) + '" width="' + PW + '" height="' + (Y(m - s) - Y(m + s)).toFixed(1) + '"/>' +
+    '<line class="meanline" x1="' + M.l + '" y1="' + Y(m).toFixed(1) + '" x2="' + (W - M.r) + '" y2="' + Y(m).toFixed(1) + '"/>';
+  // x labels (first, mid, last)
+  const xi = [0, Math.floor((data.length - 1) / 2), data.length - 1];
+  let xl = "";
+  xi.forEach((i, k) => {
+    const anc = k === 0 ? "start" : k === 2 ? "end" : "middle";
+    xl += '<text class="tick" x="' + Xi(i).toFixed(1) + '" y="' + (H - 12) + '" text-anchor="' + anc + '">' + fmtDate(data[i].iso || data[i].date) + '</text>';
+  });
+  // paths
+  const rawP = data.map((d, i) => (i ? "L" : "M") + Xi(i).toFixed(1) + " " + Y(d.value).toFixed(1)).join(" ");
+  const avgP = avg.map((v, i) => (i ? "L" : "M") + Xi(i).toFixed(1) + " " + Y(v).toFixed(1)).join(" ");
+  const dots = data.length <= 60 ? data.map((d, i) => '<circle class="dot" cx="' + Xi(i).toFixed(1) + '" cy="' + Y(d.value).toFixed(1) + '" r="2.4"/>').join("") : "";
+
+  const svg =
+    '<svg id="chartSvg" viewBox="0 0 ' + W + ' ' + H + '" role="img" aria-label="กราฟแนวโน้ม HRV">' +
+    g + band +
+    '<line class="axis" x1="' + M.l + '" y1="' + (M.t + PH) + '" x2="' + (W - M.r) + '" y2="' + (M.t + PH) + '"/>' +
+    '<path class="raw" d="' + rawP + '"/>' +
+    '<path class="avg" d="' + avgP + '"/>' + dots + xl +
+    '<line class="crosshair" id="cross" y1="' + M.t + '" y2="' + (M.t + PH) + '"/>' +
+    '<circle class="focus" id="focus" r="4.5" fill="var(--series-1)" stroke="var(--surface-1)" stroke-width="2"/>' +
+    '<rect id="hit" x="' + M.l + '" y="' + M.t + '" width="' + PW + '" height="' + PH + '" fill="transparent"/>' +
+    '</svg>';
+  const area = $("chartArea");
+  area.innerHTML = svg;
+  attachHover(data, avg, X, Y, Xi);
+}
+
+function attachHover(data, avg, X, Y, Xi) {
+  const svg = $("chartSvg"), hit = $("hit"), cross = $("cross"), focus = $("focus"), tip = $("tooltip");
+  function at(clientX) {
+    const r = svg.getBoundingClientRect();
+    const sx = (clientX - r.left) / r.width * W; // to viewBox coords
+    // nearest index
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < data.length; i++) { const d = Math.abs(Xi(i) - sx); if (d < bd) { bd = d; best = i; } }
+    const vx = Xi(best), vy = Y(data[best].value);
+    cross.setAttribute("x1", vx); cross.setAttribute("x2", vx); cross.style.opacity = 1;
+    focus.setAttribute("cx", vx); focus.setAttribute("cy", vy); focus.style.opacity = 1;
+    // tooltip position (px)
+    const r2 = svg.getBoundingClientRect(), card = $("chartCard").getBoundingClientRect();
+    const px = r2.left - card.left + (vx / W) * r2.width;
+    const py = r2.top - card.top + (vy / H) * r2.height;
+    tip.style.left = px + "px"; tip.style.top = py + "px"; tip.style.opacity = 1;
+    tip.innerHTML = fmtDate(data[best].iso || data[best].date) + "<br><b>" + Math.round(data[best].value) + " ms</b> · เฉลี่ย " + Math.round(avg[best]) + " ms";
+  }
+  const hide = () => { cross.style.opacity = 0; focus.style.opacity = 0; tip.style.opacity = 0; };
+  hit.addEventListener("mousemove", (e) => at(e.clientX));
+  hit.addEventListener("mouseleave", hide);
+  hit.addEventListener("touchstart", (e) => { at(e.touches[0].clientX); }, { passive: true });
+  hit.addEventListener("touchmove", (e) => { at(e.touches[0].clientX); }, { passive: true });
+}
+
+function renderTable(data) {
+  const wrap = $("tableWrap");
+  if (data.length === 0) { wrap.innerHTML = ""; return; }
+  const avg = rollingAvg(data.map((d) => d.value), 7);
+  let rows = "";
+  for (let i = data.length - 1; i >= 0; i--)
+    rows += "<tr><td>" + (data[i].iso || data[i].date) + "</td><td>" + Math.round(data[i].value) + "</td><td>" + Math.round(avg[i]) + "</td></tr>";
+  wrap.innerHTML = '<table><thead><tr><th>วันที่</th><th>HRV (ms)</th><th>เฉลี่ย 7 วัน</th></tr></thead><tbody>' + rows + '</tbody></table>';
+}
+
+function fmtDate(iso) {
+  const p = String(iso).split("-");
+  return p.length === 3 ? (+p[2]) + "/" + (+p[1]) : iso;
+}
+
+/* ---------- sample data ---------- */
+function sampleData() {
+  const out = []; const today = new Date();
+  let base = 42;
+  for (let i = 29; i >= 0; i--) {
+    const d = new Date(today); d.setDate(today.getDate() - i);
+    base += (Math.random() - 0.42) * 1.2;            // slight upward drift
+    const v = Math.max(20, base + (Math.random() - 0.5) * 10);
+    out.push(d.toISOString().slice(0, 10) + ", " + v.toFixed(0));
+  }
+  return out.join("\n");
+}
+
+/* ---------- storage + events ---------- */
+function save(text) { try { localStorage.setItem(KEY, text); } catch (e) {} }
+function load() { try { return localStorage.getItem(KEY) || ""; } catch (e) { return ""; } }
+
+$("renderBtn").addEventListener("click", () => { const t = $("input").value; save(t); render(parseData(t)); $("inputCard").open = false; });
+$("sampleBtn").addEventListener("click", () => { $("input").value = sampleData(); save($("input").value); render(parseData($("input").value)); $("inputCard").open = false; });
+$("clearBtn").addEventListener("click", () => { $("input").value = ""; save(""); render([]); });
+$("tableToggle").addEventListener("click", () => {
+  const w = $("tableWrap"); const open = w.hidden; w.hidden = !open;
+  $("tableToggle").textContent = (open ? "▾" : "▸") + " ดูเป็นตาราง";
+});
+(function themeInit() {
+  const btn = $("themeBtn");
+  try { const saved = localStorage.getItem("hrv-theme"); if (saved) document.documentElement.setAttribute("data-theme", saved); } catch (e) {}
+  btn.addEventListener("click", () => {
+    const cur = document.documentElement.getAttribute("data-theme");
+    const dark = cur ? cur === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    const next = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("hrv-theme", next); } catch (e) {}
+    if (DATA.length >= 2) drawChart(DATA);
+  });
+})();
+window.addEventListener("resize", () => { if (DATA.length >= 2) { /* viewBox is responsive; just refresh tooltip coords on next hover */ } });
+
+/* init */
+(function init() {
+  const saved = load();
+  if (saved) { $("input").value = saved; render(parseData(saved)); }
+  else { $("inputCard").open = true; render([]); }
+})();
+</script>
+</body>
+</html>
